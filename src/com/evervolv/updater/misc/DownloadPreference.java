@@ -23,7 +23,6 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.preference.Preference;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -43,7 +42,6 @@ import com.evervolv.updater.UpdatesFragment;
 import com.evervolv.updater.db.ManifestEntry;
 
 import java.io.File;
-
 
 public class DownloadPreference extends Preference implements OnClickListener {
 
@@ -178,6 +176,7 @@ public class DownloadPreference extends Preference implements OnClickListener {
                 }
                 animateView(mSlidingInfo, ExpandCollapseAnimation.EXPAND);
                 mActionMode = mParent.getActivity().startActionMode(mActionModeCallback);
+                mParent.setChildActionMode(mActionMode);
                 mIsDrawerOpen = true;
             } else {
                 animateView(mSlidingInfo, ExpandCollapseAnimation.COLLAPSE);
@@ -227,7 +226,7 @@ public class DownloadPreference extends Preference implements OnClickListener {
             if (file.exists()) {
                 new CalcMd5Sum().execute(mStorageDir + mEntry.getName());
             } else {
-                mMd5SumLocal.setText(R.string.changelog_info_dialog_tab_info_md5sum_local_not_exist);
+                mMd5SumLocal.setText(R.string.build_info_md5sum_local_not_exist);
             }
 
             mExpandArrow.setImageResource(R.drawable.ic_pref_collapse);
@@ -275,6 +274,7 @@ public class DownloadPreference extends Preference implements OnClickListener {
             animateView(mSlidingInfo, ExpandCollapseAnimation.COLLAPSE);
             mIsDrawerOpen = false;
             mActionMode = null;
+            mParent.setChildActionMode(mActionMode);
             mExpandArrow.setImageResource(R.drawable.ic_pref_expand);
         }
     };
@@ -283,7 +283,7 @@ public class DownloadPreference extends Preference implements OnClickListener {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mMd5SumLocal.setText(R.string.changelog_info_dialog_tab_info_md5sum_calculate);
+            mMd5SumLocal.setText(R.string.build_info_md5sum_calculating);
         }
 
         @Override
@@ -432,6 +432,14 @@ public class DownloadPreference extends Preference implements OnClickListener {
 
     public String getStorageLocation() {
         return mStorageDir;
+    }
+
+    public boolean isDrawerOpen() {
+        return mIsDrawerOpen;
+    }
+
+    public ActionMode getActionMode() {
+        return mActionMode;
     }
 
 }

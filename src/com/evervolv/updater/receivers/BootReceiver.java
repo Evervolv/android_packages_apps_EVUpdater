@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 The CyanogenMod Project
+ * Copyright (C) 2013 The Evervolv Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,16 +23,11 @@ import android.content.Intent;
 import com.evervolv.updater.misc.Constants;
 import com.evervolv.updater.services.UpdateManifestService;
 
-
 public class BootReceiver extends BroadcastReceiver {
-
-    private static final String TAG = Constants.TAG;
-
     @Override
     public void onReceive(Context ctx, Intent intent) {
         Intent onBootIntent = new Intent(ctx, UpdateManifestService.class);
-        onBootIntent.setAction(UpdateManifestService.ACTION_BOOT_COMPLETED);
+        onBootIntent.setAction(Constants.ACTION_BOOT_COMPLETED);
         ctx.startService(onBootIntent);
     }
-
 }

@@ -23,21 +23,28 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.view.Menu;
-import android.view.MenuInflater;
+import android.util.Log;
+import android.view.ActionMode;
 import android.view.MenuItem;
 import android.view.Window;
 
-import com.evervolv.updater.R;
+import com.evervolv.updater.db.ManifestEntry;
+import com.evervolv.updater.misc.Constants;
 import com.evervolv.updater.tabs.*;
 
 import java.util.ArrayList;
 
 public class Updater extends Activity {
+
+    private static final int TAB_POS_NIGHTLIES  = 0;
+    private static final int TAB_POS_RELEASES   = 1;
+    private static final int TAB_POS_TESTING    = 2;
+    private static final int TAB_POS_GAPPS      = 3;
+    private static final int TAB_POS_SETTINGS   = 4;
 
     private ViewPager mViewPager;
     private TabsAdapter mTabsAdapter;
@@ -54,9 +61,9 @@ public class Updater extends Activity {
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE);
         bar.setTitle(R.string.app_name);
-        // TODO: Fix this so home will be Settings
-        // bar.setDisplayHomeAsUpEnabled(true);
+        bar.setDisplayHomeAsUpEnabled(true);
 
+        // Ordered relation to TAB_POS_*
         mTabsAdapter = new TabsAdapter(this, mViewPager);
         mTabsAdapter.addTab(bar.newTab().setText(R.string.tab_title_nightlies),
                 NightliesTab.class, null);
@@ -75,35 +82,50 @@ public class Updater extends Activity {
         super.onStart();
         ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE))
                 .cancelAll();
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.updates_menu, menu);
-        return true;
+        Intent intent = getIntent();
+        ManifestEntry entry = intent.getParcelableExtra(
+                Constants.EXTRA_MANIFEST_ENTRY);
+        if (entry != null) {
+            if (entry.getType().equals(Constants.BUILD_TYPE_NIGHTLIES)) {
+                mViewPager.setCurrentItem(TAB_POS_NIGHTLIES);
+            } else if (entry.getType().equals(Constants.BUILD_TYPE_RELEASE)) {
+                mViewPager.setCurrentItem(TAB_POS_RELEASES);
+            } else if (entry.getType().equals(Constants.BUILD_TYPE_TESTING)) {
+                mViewPager.setCurrentItem(TAB_POS_TESTING);
+            } else if (entry.getType().equals(Constants.BUILD_TYPE_GAPPS)) {
+                mViewPager.setCurrentItem(TAB_POS_GAPPS);
+            } else {
+                Log.e(Constants.TAG, "Updater::onStart() - Unknown build type");
+            }
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_refresh:
-                UpdatesFragment frag = (UpdatesFragment) mTabsAdapter.getItem(mViewPager.getCurrentItem());
-                frag.checkForUpdates();
-                return true;
+        case android.R.id.home:
+            onBackPressed();
+            return true;
         }
-        return false;
+        return super.onOptionsItemSelected(item);
     }
-    
-    static class TabsAdapter extends FragmentPagerAdapter
+
+    public UpdatesFragment findFragmentByPosition(int position) {
+        return (UpdatesFragment) getFragmentManager().findFragmentByTag(
+                "android:switcher:" + mViewPager.getId() + ":"
+                        + mTabsAdapter.getItemId(position));
+    }
+
+    class TabsAdapter extends FragmentPagerAdapter
             implements ActionBar.TabListener, ViewPager.OnPageChangeListener {
         private final Context mContext;
         private final ActionBar mActionBar;
         private final ViewPager mViewPager;
         private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
+        private int mLastPosition = 0;
 
-        static final class TabInfo {
+        final class TabInfo {
             private final Class<?> clss;
             private final Bundle args;
 
@@ -144,6 +166,21 @@ public class Updater extends Activity {
 
         public void onPageSelected(int position) {
             mActionBar.setSelectedNavigationItem(position);
+
+            /* We need to close the action view when scrolling, if opened.
+             * But skip the last fragment, it's our settings. And skip when
+             * frag is null.
+             */
+            if (mLastPosition != TAB_POS_SETTINGS) {
+                UpdatesFragment frag = findFragmentByPosition(mLastPosition);
+                if (frag != null) {
+                    ActionMode actionMode = frag.getChildActionMode();
+                    if (actionMode != null) {
+                        actionMode.finish();
+                    }
+                }
+            }
+            mLastPosition = position;
         }
 
         public void onTabSelected(Tab tab, FragmentTransaction ft) {

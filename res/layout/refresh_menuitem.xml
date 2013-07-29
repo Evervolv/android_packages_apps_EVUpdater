@@ -16,13 +16,18 @@
  * limitations under the License.
  -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/menu_changelog"
-          android:icon="@drawable/ic_menu_changelog"
-          android:title="@string/menu_changelog"
-          android:showAsAction="ifRoom" />
-    <item android:id="@+id/menu_cancel"
-          android:icon="@drawable/ic_menu_cancel"
-          android:title="@string/menu_cancel"
-          android:showAsAction="ifRoom" />
-</menu>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="48dp"
+    android:layout_height="48dp"
+    android:addStatesFromChildren="true"
+    android:focusable="true"
+    android:paddingLeft="4dp"
+    android:paddingRight="4dp"
+    android:gravity="center"
+    style="?android:attr/actionButtonStyle">
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="true"
+        style="@android:style/Widget.Holo.ProgressBar.Small"/>
+</LinearLayout> 

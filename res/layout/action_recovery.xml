@@ -16,13 +16,8 @@
  * limitations under the License.
  -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/menu_changelog"
-          android:icon="@drawable/ic_menu_changelog"
-          android:title="@string/menu_changelog"
-          android:showAsAction="ifRoom" />
-    <item android:id="@+id/menu_cancel"
-          android:icon="@drawable/ic_menu_cancel"
-          android:title="@string/menu_cancel"
-          android:showAsAction="ifRoom" />
-</menu>
+<Spinner xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/recovery_spinner"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:entries="@array/supported_recovery_list"/>

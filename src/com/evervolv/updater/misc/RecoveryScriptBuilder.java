@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2013 The Evervolv Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.evervolv.updater.misc;
 
 import android.os.Environment;
@@ -14,13 +30,17 @@ public class RecoveryScriptBuilder {
     public static final int TWRP = 0;
     public static final int CWM  = 1;
 
-    public static final int BACKUP = 0x00000001;
-    public static final int WIPE   = 0x00000010;
+    public static final int BACKUP        = 1;
+    public static final int WIPE_DATA     = 2;
+    public static final int WIPE_CACHE    = 4;
+    public static final int WIPE_DALVIK   = 8;
 
     private int mType;
     private List<Zip> mZipList;
     private boolean mBackup = false;
-    private boolean mWipe = false;
+    private boolean mWipeData = false;
+    private boolean mWipeCache = false;
+    private boolean mWipeDalvik = false;
 
     public RecoveryScriptBuilder(int type, List<Zip> zips, int flags) {
         mType = type;
@@ -45,8 +65,14 @@ public class RecoveryScriptBuilder {
         if ((flags & BACKUP) == BACKUP) {
             mBackup = true;
         }
-        if ((flags & WIPE) == WIPE) {
-            mWipe = true;
+        if ((flags & WIPE_DATA) == WIPE_DATA) {
+            mWipeData = true;
+        }
+        if ((flags & WIPE_CACHE) == WIPE_CACHE) {
+            mWipeCache = true;
+        }
+        if ((flags & WIPE_DALVIK) == WIPE_DALVIK) {
+            mWipeDalvik = true;
         }
     }
 
@@ -63,12 +89,19 @@ public class RecoveryScriptBuilder {
                         Utils.getBackupDirectory(),
                         recoveryScript).getBytes());
             }
-            if (mWipe) {
-                o.write(String.format("echo 'wipe cache' >> %s\n",
-                        recoveryScript).getBytes());
+            if (mWipeData) {
                 o.write(String.format("echo 'wipe data' >> %s\n",
                         recoveryScript).getBytes());
             }
+            if (mWipeCache) {
+                o.write(String.format("echo 'wipe cache' >> %s\n",
+                        recoveryScript).getBytes());
+            }
+            if (mWipeDalvik) {
+                o.write(String.format("echo 'wipe dalvik' >> %s\n",
+                        recoveryScript).getBytes());
+            }
+
             if (!mZipList.isEmpty()) {
                 for (Zip i: mZipList) {
                     /* Using local path should prevent fuckups from different recovery mount points */
@@ -100,15 +133,23 @@ public class RecoveryScriptBuilder {
             o.write(String.format("echo -n > %s\n",
                     recoveryScript).getBytes());
             if (mBackup) {
-                o.write(String.format("echo 'backup_rom(\"/sdcard/clockworkmod/backup/%s\"' >> %s\n",
+                o.write(String.format("echo 'backup_rom(\"%sclockworkmod/backup/%s\"' >> %s\n",
+                        sdcardPath,
                         Utils.getBackupDirectory(),
                         recoveryScript).getBytes());
             }
-            if (mWipe) {
-                o.write(String.format("echo 'format(\"/cache\")' >> %s\n",
-                        recoveryScript).getBytes());
+            if (mWipeData) {
                 o.write(String.format("echo 'format(\"/data\")' >> %s\n",
                         recoveryScript).getBytes());
+            }
+            if (mWipeCache) {
+                o.write(String.format("echo 'format(\"/cache\")' >> %s\n",
+                        recoveryScript).getBytes());
+            }
+            if (mWipeDalvik) {
+                //TODO: Wipe dalvik cache, do we need to mount cache first?
+                //o.write(String.format("echo 'format(\"/data\")' >> %s\n",
+                //        recoveryScript).getBytes());
             }
             if (!mZipList.isEmpty()) {
                 for (Zip i: mZipList) {

@@ -48,7 +48,7 @@ public class ChangelogDialog extends DialogFragment {
 
         View v = inflater.inflate(R.layout.update_changelog, null, false);
         WebView wv = (WebView) v.findViewById(R.id.changelog_webview);
-        wv.getSettings().setTextZoom(res.getInteger(R.integer.updates_webview_text_zoom));
+        wv.getSettings().setTextZoom(res.getInteger(R.integer.changelog_text_zoom));
 
         if (mEntry.getType().equals(Constants.BUILD_TYPE_NIGHTLIES)) {
             String url = Constants.FETCH_URL + "changelog-" + mEntry.getDate() + ".html";
@@ -67,7 +67,7 @@ public class ChangelogDialog extends DialogFragment {
         }
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(mActivity);
-        dialog.setTitle(R.string.changelog_info_dialog_title);
+        dialog.setTitle(R.string.changelog_dialog_title);
         dialog.setView(v);
         dialog.setPositiveButton(R.string.okay,
                 new DialogInterface.OnClickListener() {

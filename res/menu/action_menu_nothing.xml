@@ -22,7 +22,7 @@
           android:title="@string/menu_changelog"
           android:showAsAction="ifRoom" />
     <item android:id="@+id/menu_download"
-          android:icon="@drawable/ic_pref_download"
+          android:icon="@drawable/ic_menu_download"
           android:title="@string/menu_download"
           android:showAsAction="ifRoom" />
 </menu>

@@ -33,10 +33,8 @@ public class ExpandCollapseAnimation extends Animation {
 
         mAnimatedView = view;
         mEndHeight = mAnimatedView.getHeight();
-        Log.d("ExpandCollapseAnimation", "mEndHeight " + mEndHeight);
         if (mEndHeight == 0) { // Hack
             mEndHeight = 180; // Make larger that we need it wont overflow
-            Log.d("ExpandCollapseAnimation", "Faking height " + mEndHeight);
         }
         mLayoutParams = ((LinearLayout.LayoutParams) view.getLayoutParams());
         mType = type;
@@ -60,7 +58,6 @@ public class ExpandCollapseAnimation extends Animation {
             } else {
                 mLayoutParams.bottomMargin = - (int) (mEndHeight * interpolatedTime);
             }
-            Log.d("ExpandCollapseAnimation", "anim height " + mLayoutParams.bottomMargin);
             mAnimatedView.requestLayout();
         } else {
             if(mType == EXPAND) {

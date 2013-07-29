@@ -23,7 +23,6 @@ import com.evervolv.updater.R;
 
 public class SettingsTab extends PreferenceFragment {
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
