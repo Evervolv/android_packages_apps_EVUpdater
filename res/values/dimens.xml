@@ -17,5 +17,5 @@
  -->
 
 <resources>
-    <dimen name="tab_info_text_size_right">10sp</dimen>
+    <dimen name="build_info_text_size_right_column">10sp</dimen>
 </resources>

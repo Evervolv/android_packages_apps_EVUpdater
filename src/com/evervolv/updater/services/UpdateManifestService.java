@@ -26,6 +26,7 @@ import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
 import com.evervolv.updater.db.DatabaseManager;
+import com.evervolv.updater.db.ManifestEntry;
 import com.evervolv.updater.misc.Constants;
 import com.evervolv.updater.misc.Utils;
 
@@ -48,17 +49,19 @@ public class UpdateManifestService extends IntentService {
     private static final String TAG = Constants.TAG;
 
     /* Intent extra fields */
-    public static final String EXTRA_MANIFEST_ERROR = "manifest_error";
-    public static final String EXTRA_UPDATE_NON_INTERACTIVE = "update_non_interactive";
-    public static final String EXTRA_SCHEDULE_UPDATE = "update_schedule";
+    private static final String EXTRA_MANIFEST_ERROR  = Constants.EXTRA_MANIFEST_ERROR;
+    private static final String EXTRA_MANIFEST_ENTRY  = Constants.EXTRA_MANIFEST_ENTRY;
+    private static final String EXTRA_SCHEDULE_UPDATE = Constants.EXTRA_SCHEDULE_UPDATE;
+    private static final String EXTRA_UPDATE_NON_INTERACTIVE = Constants.EXTRA_UPDATE_NON_INTERACTIVE;
 
     /* Intent actions */
-    public static final String ACTION_UPDATE_CHECK_NIGHTLY = "com.evervolv.toolbox.updates.actions.UPDATE_CHECK_NIGHTLY";
-    public static final String ACTION_UPDATE_CHECK_RELEASE = "com.evervolv.toolbox.updates.actions.UPDATE_CHECK_RELEASE";
-    public static final String ACTION_UPDATE_CHECK_TESTING = "com.evervolv.toolbox.updates.actions.UPDATE_CHECK_TESTING";
-    public static final String ACTION_UPDATE_CHECK_GAPPS = "com.evervolv.updates.actions.UPDATE_CHECK_GAPPS";
-    public static final String ACTION_CHECK_FINISHED = "com.evervolv.toolbox.updates.actions.UPDATE_CHECK_FINISHED";
-    public static final String ACTION_BOOT_COMPLETED = "com.evervolv.toolbox.updates.actions.BOOT_COMPLETED";
+    private static final String ACTION_UPDATE_CHECK_NIGHTLY  = Constants.ACTION_UPDATE_CHECK_NIGHTLY;
+    private static final String ACTION_UPDATE_CHECK_RELEASE  = Constants.ACTION_UPDATE_CHECK_RELEASE;
+    private static final String ACTION_UPDATE_CHECK_TESTING  = Constants.ACTION_UPDATE_CHECK_TESTING;
+    private static final String ACTION_UPDATE_CHECK_GAPPS    = Constants.ACTION_UPDATE_CHECK_GAPPS;
+    private static final String ACTION_UPDATE_NOTIFY_NEW     = Constants.ACTION_UPDATE_NOTIFY_NEW;
+    private static final String ACTION_CHECK_FINISHED        = Constants.ACTION_UPDATE_CHECK_FINISHED;
+    private static final String ACTION_BOOT_COMPLETED        = Constants.ACTION_BOOT_COMPLETED;
 
     private SharedPreferences preferences;
     private DatabaseManager databaseManager;
@@ -98,7 +101,7 @@ public class UpdateManifestService extends IntentService {
                 scheduleUpdateCheck(ACTION_UPDATE_CHECK_NIGHTLY, updateFreq, now, false);
                 return;
             }
-            error = handleManifest(Constants.API_URL_NIGHTLY, DatabaseManager.NIGHTLIES);
+            error = handleManifest(Constants.API_URL_NIGHTLY, Constants.BUILD_TYPE_NIGHTLIES);
         } else if (action.equals(ACTION_UPDATE_CHECK_RELEASE)) {
             preferences.edit().putLong(Constants.PREF_LAST_UPDATE_CHECK_RELEASE, now).commit();
             if (schedule) {
@@ -107,7 +110,7 @@ public class UpdateManifestService extends IntentService {
                 scheduleUpdateCheck(ACTION_UPDATE_CHECK_RELEASE, updateFreq, now, false);
                 return;
             }
-            error = handleManifest(Constants.API_URL_RELEASE, DatabaseManager.RELEASES);
+            error = handleManifest(Constants.API_URL_RELEASE, Constants.BUILD_TYPE_RELEASE);
         } else if (action.equals(ACTION_UPDATE_CHECK_TESTING)) {
             preferences.edit().putLong(Constants.PREF_LAST_UPDATE_CHECK_TESTING, now).commit();
             if (schedule) {
@@ -116,10 +119,11 @@ public class UpdateManifestService extends IntentService {
                 scheduleUpdateCheck(ACTION_UPDATE_CHECK_TESTING, updateFreq, now, false);
                 return;
             }
-            error = handleManifest(Constants.API_URL_TESTING, DatabaseManager.TESTING);
+            error = handleManifest(Constants.API_URL_TESTING, Constants.BUILD_TYPE_TESTING);
         } else if (action.equals(ACTION_UPDATE_CHECK_GAPPS)) {
-            error = handleManifest(Constants.API_URL_GAPPS, DatabaseManager.GAPPS);
+            error = handleManifest(Constants.API_URL_GAPPS, Constants.BUILD_TYPE_GAPPS);
         } else if (action.equals(ACTION_BOOT_COMPLETED)) {
+            if (Constants.DEBUG) Log.d(TAG, "onBootComplete");
             /* Nightlies */
             updateFreq = preferences.getInt(Constants.PREF_UPDATE_SCHEDULE_NIGHTLY,
                     Constants.UPDATE_DEFAULT_NIGHTLY);
@@ -169,7 +173,7 @@ public class UpdateManifestService extends IntentService {
         }
     }
 
-    private boolean handleManifest(String url, int updateType) {
+    private boolean handleManifest(String url, String updateType) {
         boolean error = false;
         String jsonString;
         try {
@@ -183,6 +187,7 @@ public class UpdateManifestService extends IntentService {
     }
 
     private String fetchManifest(String url) throws IOException, HttpException {
+        if (Constants.DEBUG) Log.d(TAG, "Fetching " + url + Utils.getDevice());
         StringBuilder builder = new StringBuilder();
         HttpClient client = new DefaultHttpClient();
 
@@ -202,17 +207,18 @@ public class UpdateManifestService extends IntentService {
         return builder.toString();
     }
 
-    private void processManifest(String jsonString, int updateType)
+    private void processManifest(String jsonString, String updateType)
             throws JSONException, SQLiteException {
         JSONArray entries = new JSONArray(jsonString);
         databaseManager.updateManifest(updateType, entries);
         for (int i=0; i<entries.length(); i++) {
             JSONObject entry = entries.getJSONObject(i);
-            if (Utils.isNewerThanInstalled(entry.getString("date"))) {
-                Log.i(TAG, "Found new update");
-                /* TODO FEATURE:
-                 * Notify user of new update found.
-                 */
+            if (Utils.isNewerThanInstalled(entry.optString(ManifestEntry.COLUMN_DATE))) {
+                Log.i(TAG, "Found new update " + entry.optString(ManifestEntry.COLUMN_NAME));
+                Intent notify = new Intent();
+                notify.setAction(ACTION_UPDATE_NOTIFY_NEW);
+                notify.putExtra(EXTRA_MANIFEST_ENTRY, new ManifestEntry(entry));
+                sendOrderedBroadcast(notify, null);
                 break;
             }
         }
@@ -222,7 +228,7 @@ public class UpdateManifestService extends IntentService {
 
         Intent updateCheck = new Intent(this, UpdateManifestService.class);
         updateCheck.setAction(action);
-        updateCheck.putExtra(UpdateManifestService.EXTRA_UPDATE_NON_INTERACTIVE, true);
+        updateCheck.putExtra(EXTRA_UPDATE_NON_INTERACTIVE, true);
         PendingIntent pi = PendingIntent.getService(this, 0, updateCheck,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 

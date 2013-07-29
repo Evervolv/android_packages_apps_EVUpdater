@@ -22,21 +22,20 @@ import android.os.Parcelable;
 
 import org.json.JSONObject;
 
-
 public class ManifestEntry implements Parcelable {
 
-    public static final String COLUMN_ID            = "_id";
-    public static final String COLUMN_DATE          = "date";
-    public static final String COLUMN_NAME          = "name";
-    public static final String COLUMN_MD5SUM        = "md5sum";
-    public static final String COLUMN_LOCATION      = "location";
-    public static final String COLUMN_DEVICE        = "device";
-    public static final String COLUMN_MESSAGE       = "message";
-    public static final String COLUMN_TYPE          = "type";
-    public static final String COLUMN_SIZE          = "size";
-    public static final String COLUMN_COUNT         = "count";
+    public static final String COLUMN_ID       = "_id";
+    public static final String COLUMN_DATE     = "date";
+    public static final String COLUMN_NAME     = "name";
+    public static final String COLUMN_MD5SUM   = "md5sum";
+    public static final String COLUMN_LOCATION = "location";
+    public static final String COLUMN_DEVICE   = "device";
+    public static final String COLUMN_MESSAGE  = "message";
+    public static final String COLUMN_TYPE     = "type";
+    public static final String COLUMN_SIZE     = "size";
+    public static final String COLUMN_COUNT    = "count";
 
-    public static final String[] ALL_COLUMNS = {
+    static final String[] ALL_COLUMNS = {
             COLUMN_ID,
             COLUMN_DATE,
             COLUMN_NAME,
@@ -49,7 +48,7 @@ public class ManifestEntry implements Parcelable {
             COLUMN_COUNT,
     };
 
-    public static final String TABLE_TEMPLATE = " (" +
+    static final String TABLE_TEMPLATE = " (" +
             COLUMN_ID  + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COLUMN_DATE     + " TEXT, " +
             COLUMN_NAME     + " TEXT, " +

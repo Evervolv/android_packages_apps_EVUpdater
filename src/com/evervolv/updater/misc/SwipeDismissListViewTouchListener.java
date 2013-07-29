@@ -193,9 +193,8 @@ public class SwipeDismissListViewTouchListener implements View.OnTouchListener {
              if (mDownView != null) {
                  mDownX = motionEvent.getRawX();
                  mDownPosition = mListView.getPositionForView(mDownView);
-                 // TODO: Don't do anything for the first position -- Is this the best way?
                  if (mDownPosition == 0) {
-                     //return false;
+                     return false;
                  }
                  mVelocityTracker = VelocityTracker.obtain();
                  mVelocityTracker.addMovement(motionEvent);

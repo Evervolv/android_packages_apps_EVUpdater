@@ -16,11 +16,38 @@
 
 package com.evervolv.updater.db;
 
+import android.database.Cursor;
+
 public class DownloadEntry {
+
+    public static final String COLUMN_ID          = "_id";
+    public static final String COLUMN_DOWNLOAD_ID = "download_id";
+    public static final String COLUMN_MD5SUM      = "md5sum";
+
+    static final String[] ALL_COLUMNS = {
+            COLUMN_ID,
+            COLUMN_DOWNLOAD_ID,
+            COLUMN_MD5SUM,
+    };
+
+    static final String TABLE_TEMPLATE = " (" +
+            COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            COLUMN_DOWNLOAD_ID + " INTEGER, " +
+            COLUMN_MD5SUM      + " TEXT);";
+
     private long id;
     private long downloadId;
     private String md5sum;
-    private String locationUri;
+
+    public DownloadEntry() {
+        /* pass */
+    }
+
+    public DownloadEntry(Cursor cursor) {
+        this.id         = cursor.getLong(0);
+        this.downloadId = cursor.getLong(1);
+        this.md5sum     = cursor.getString(2);
+    }
 
     public long getId() {
         return id;
@@ -46,11 +73,4 @@ public class DownloadEntry {
         this.md5sum = md5sum;
     }
 
-    public String getLocationUri() {
-        return locationUri;
-    }
-
-    public void setLocationUri(String locationUri) {
-        this.locationUri = locationUri;
-    }
 }

@@ -18,27 +18,27 @@
     <uses-permission android:name="android.permission.ACCESS_DOWNLOAD_MANAGER" />
     <uses-permission android:name="android.permission.ACCESS_CACHE_FILESYSTEM"/>
 
-    <uses-sdk android:minSdkVersion="17"
-        android:targetSdkVersion="17" />
+    <uses-sdk android:minSdkVersion="18"
+        android:targetSdkVersion="18" />
 
     <application
-        android:icon="@drawable/ic_launcher_toolbox"
+        android:icon="@drawable/ic_launcher_updater"
         android:label="@string/app_name"
-        android:hardwareAccelerated="true">
+        android:hardwareAccelerated="true"
+        android:launchMode="singleTop">
 
         <activity
             android:name=".Updater"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <activity
-            android:label="@string/flash_zip_dialog"
-            android:name=".FlashActivity">
+            android:name=".FlashActivity"
+            android:label="@string/flash_zip_activity">
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -51,6 +51,9 @@
 
         <service android:name=".services.DownloadService"
                 android:process=":DownloadService">
+            <intent-filter>
+                <action android:name="com.evervolv.updater.actions.START_DOWNLOAD"/>
+            </intent-filter>
         </service>
 
         <receiver android:name=".receivers.BootReceiver">
@@ -63,7 +66,6 @@
         <receiver android:name=".receivers.DownloadCompleteReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
-                <action android:name="com.evervolv.updater.actions.ACTION_UPDATE_DOWNLOAD"/>
                 <category android:name="android.intent.category.HOME"/>
             </intent-filter>
         </receiver>
@@ -75,9 +77,10 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".receivers.NotifyUpdateReceiver">
+        <receiver android:name=".receivers.NotificationHandler">
             <intent-filter>
                 <action android:name="com.evervolv.updater.actions.UPDATE_NOTIFY_NEW"/>
+                <action android:name="com.evervolv.updater.actions.UPDATE_DOWNLOAD"/>
             </intent-filter>
         </receiver>
 

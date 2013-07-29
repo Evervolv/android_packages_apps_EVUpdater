@@ -18,13 +18,13 @@
 
 <resources>
 
-    <string-array name="updates_schedule_entries">
-        <item>Never</item>
-        <item>On boot</item>
-        <item>Daily</item>
-        <item>Weekly</item>
-        <item>Bi-weekly</item>
-        <item>Monthly</item>
+    <string-array name="updates_schedule_entries" translatable="false">
+        <item>@string/schedule_never</item>
+        <item>@string/schedule_boot</item>
+        <item>@string/schedule_daily</item>
+        <item>@string/schedule_weekly</item>
+        <item>@string/schedule_biweekly</item>
+        <item>@string/schedule_monthly</item>
     </string-array>
 
     <string-array name="updates_schedule_entry_values" translatable="false">
@@ -34,6 +34,11 @@
         <item>604800</item>
         <item>1209600</item>
         <item>2419200</item>
+    </string-array>
+
+    <string-array name="supported_recovery_list" translatable="false">
+        <item>@string/recovery_twrp</item>
+        <item>@string/recovery_cwm</item>
     </string-array>
 
 </resources>

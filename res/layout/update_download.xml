@@ -75,7 +75,7 @@
                     android:layout_weight="1">
 
                     <TextView
-                        android:id="@+android:id/title"
+                        android:id="@android:id/title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:singleLine="true"
@@ -129,12 +129,12 @@
             <TextView android:id="@+id/caption_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/changelog_info_dialog_tab_info_date"/>
+                android:text="@string/build_info_date"/>
 
             <TextView android:id="@+id/text_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/tab_info_text_size_right"/>
+                android:textSize="@dimen/build_info_text_size_right_column"/>
 
         </TableRow>
         <TableRow
@@ -145,12 +145,12 @@
             <TextView android:id="@+id/caption_filename"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/changelog_info_dialog_tab_info_filename"/>
+                android:text="@string/build_info_filename"/>
 
             <TextView android:id="@+id/text_filename"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/tab_info_text_size_right"/>
+                android:textSize="@dimen/build_info_text_size_right_column"/>
 
         </TableRow>
         <TableRow
@@ -161,12 +161,12 @@
             <TextView android:id="@+id/caption_size"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
-                      android:text="@string/changelog_info_dialog_tab_info_size"/>
+                      android:text="@string/build_info_size"/>
 
             <TextView android:id="@+id/text_size"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
-                      android:textSize="@dimen/tab_info_text_size_right"/>
+                      android:textSize="@dimen/build_info_text_size_right_column"/>
 
         </TableRow>
         <TableRow
@@ -177,13 +177,13 @@
             <TextView android:id="@+id/caption_md5sum_server"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/changelog_info_dialog_tab_info_md5sum_server"/>
+                android:text="@string/build_info_md5sum_server"/>
 
             <TextView android:id="@+id/text_md5sum_server"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|left"
-                android:textSize="@dimen/tab_info_text_size_right"/>
+                android:textSize="@dimen/build_info_text_size_right_column"/>
 
         </TableRow>
         <TableRow
@@ -194,13 +194,13 @@
             <TextView android:id="@+id/caption_md5sum_local"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/changelog_info_dialog_tab_info_md5sum_local"/>
+                android:text="@string/build_info_md5sum_local"/>
 
             <TextView android:id="@+id/text_md5sum_local"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|left"
-                android:textSize="@dimen/tab_info_text_size_right"/>
+                android:textSize="@dimen/build_info_text_size_right_column"/>
 
         </TableRow>
     </TableLayout>

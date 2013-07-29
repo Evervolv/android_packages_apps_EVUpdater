@@ -21,10 +21,15 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
+import android.net.Uri;
+import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 
 import com.evervolv.updater.db.DatabaseManager;
+import com.evervolv.updater.db.DownloadEntry;
+import com.evervolv.updater.db.ManifestEntry;
 import com.evervolv.updater.misc.Constants;
 
 import java.io.File;
@@ -35,19 +40,22 @@ public class DownloadService extends Service {
 
     private static final String TAG = Constants.TAG;
 
-    public static final String ACTION_UPDATE_DOWNLOAD = "com.evervolv.toolbox.actions.ACTION_UPDATE_DOWNLOAD";
+    /* Intent extra fields */
+    private static final String EXTRA_DOWNLOAD_ID       = Constants.EXTRA_DOWNLOAD_ID;
+    private static final String EXTRA_DOWNLOAD_STATUS   = Constants.EXTRA_DOWNLOAD_STATUS;
+    private static final String EXTRA_DOWNLOAD_PROGRESS = Constants.EXTRA_DOWNLOAD_PROGRESS;
 
-    public static final String EXTRA_DOWNLOAD_ID = "download_id";
-    public static final String EXTRA_DOWNLOAD_STATUS = "download_status";
-    public static final String EXTRA_DOWNLOAD_PROGRESS = "download_progress";
+    /* Intent actions */
+    private static final String ACTION_UPDATE_DOWNLOAD = Constants.ACTION_UPDATE_DOWNLOAD;
+    private static final String ACTION_START_DOWNLOAD  = Constants.ACTION_START_DOWNLOAD;
 
     List<Download> mDownloads = new ArrayList<Download>();
     private boolean mDestroyed = false;
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         mDestroyed = true; /* Tell our threads to die */
+        super.onDestroy();
     }
 
     @Override
@@ -57,12 +65,19 @@ public class DownloadService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        long downloadId = intent.getLongExtra(EXTRA_DOWNLOAD_ID, -1);
+        String action = intent.getAction();
+        long downloadId;
+        if (action != null && action.equals(ACTION_START_DOWNLOAD)) {
+            ManifestEntry entry = intent.getParcelableExtra(Constants.EXTRA_MANIFEST_ENTRY);
+            downloadId = initiateNewDownload(entry);
+        } else {
+            downloadId = intent.getLongExtra(EXTRA_DOWNLOAD_ID, -1);
+        }
         if (downloadId > 0) {
             for (Download dl : mDownloads) {
                 if (downloadId == dl.id) {
                     /* We are already running for this download... do nothing */
-                    Log.i(TAG, "DownloadService: already tracking download " + downloadId);
+                    if (Constants.DEBUG) Log.d(TAG, "DownloadService: already tracking download " + downloadId);
                     return START_NOT_STICKY;
                 }
             }
@@ -72,6 +87,37 @@ public class DownloadService extends Service {
             p.start();
         }
         return START_NOT_STICKY; /* We handle restarting */
+    }
+
+    /* Only use when started externally */
+    private long initiateNewDownload(ManifestEntry entry) {
+        String storageDir = Environment.getExternalStorageDirectory().getAbsolutePath()
+                + "/" + Constants.DOWNLOAD_DIRECTORY + entry.getType() + "/";
+        File downloadDir = new File(storageDir);
+        if (!downloadDir.exists()) {
+            downloadDir.mkdirs();
+        }
+        String url = Constants.FETCH_URL + entry.getName();
+        DownloadManager.Request req = new DownloadManager.Request(Uri.parse(url));
+        String filename = "file://" + storageDir + entry.getName() + ".partial";
+        req.setTitle(new File(filename).getName().replace(".partial", ""));
+        req.setDestinationUri(Uri.parse(filename));
+        req.setAllowedOverRoaming(false);
+        req.setVisibleInDownloadsUi(false);
+        DownloadManager dlm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+        long downloadId = dlm.enqueue(req);
+        try {
+            DownloadEntry dlEntry = new DownloadEntry();
+            dlEntry.setDownloadId(downloadId);
+            dlEntry.setMd5sum(entry.getMd5sum());
+            DatabaseManager dm = new DatabaseManager(this);
+            dm.open();
+            dm.addDownload(dlEntry);
+            dm.close();
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+        }
+        return downloadId;
     }
 
     private class ProgressThread extends Thread {
@@ -119,11 +165,11 @@ public class DownloadService extends Service {
                             break;
                         }
                         previousProgress = progress;
-                        Log.d(TAG, "ProgressThread: download " + id + " at " + progress + "%");
+                        if (Constants.DEBUG) Log.d(TAG, "ProgressThread: download " + id + " at " + progress + "%");
                         break;
                     case DownloadManager.STATUS_PENDING:
                     case DownloadManager.STATUS_PAUSED:
-                        Log.d(TAG, "ProgressThread: download " + id + " paused/pending");
+                        if (Constants.DEBUG) Log.d(TAG, "ProgressThread: download " + id + " paused/pending");
                         deferUpdate = true;
                         break;
                     case DownloadManager.STATUS_SUCCESSFUL:
@@ -133,11 +179,11 @@ public class DownloadService extends Service {
                         partialFile.renameTo(newFile);
                         databaseManager.removeDownload(id);
                         end = true;
-                        Log.d(TAG, "ProgressThread: download " + id + " completed successfully");
+                        if (Constants.DEBUG) Log.d(TAG, "ProgressThread: download " + id + " completed successfully");
                         break;
                     case DownloadManager.STATUS_FAILED:
                     default: /* We don't want this running forever if something goes wrong */
-                        Log.d(TAG, "ProgressThread: download " + id + " failed");
+                        Log.w(TAG, "ProgressThread: download " + id + " failed");
                         databaseManager.removeDownload(id);
                         end = true;
                         break;
@@ -150,7 +196,7 @@ public class DownloadService extends Service {
                     dlIntent.putExtra(EXTRA_DOWNLOAD_ID, id);
                     dlIntent.putExtra(EXTRA_DOWNLOAD_STATUS, status);
                     dlIntent.putExtra(EXTRA_DOWNLOAD_PROGRESS, progress);
-                    sendBroadcast(dlIntent);
+                    sendOrderedBroadcast(dlIntent, null);
                 }
                 if (mDestroyed) break;
                 if (end) break;

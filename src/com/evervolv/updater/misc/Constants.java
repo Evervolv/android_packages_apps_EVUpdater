@@ -18,6 +18,8 @@ package com.evervolv.updater.misc;
 
 public class Constants {
 
+    public static final boolean DEBUG = false;
+
     public static final String TAG = "EVUpdates";
 
     public static final String APP_NAME = "EVToolbox";
@@ -50,10 +52,32 @@ public class Constants {
     public static final int UPDATE_DEFAULT_RELEASE = UPDATE_CHECK_MONTHLY;
     public static final int UPDATE_DEFAULT_TESTING = UPDATE_CHECK_NEVER;
 
+    /* Download subdirectory and database table names */
     public static final String BUILD_TYPE_RELEASE   = "release";
     public static final String BUILD_TYPE_NIGHTLIES = "nightly";
     public static final String BUILD_TYPE_TESTING   = "testing";
     public static final String BUILD_TYPE_GAPPS     = "gapps";
 
+    /* Intent extra fields */
+    public static final String EXTRA_DOWNLOAD_ID            = "download_id";
+    public static final String EXTRA_DOWNLOAD_STATUS        = "download_status";
+    public static final String EXTRA_DOWNLOAD_PROGRESS      = "download_progress";
     public static final String EXTRA_MANIFEST_ENTRY         = "manifest_entry";
+    public static final String EXTRA_MANIFEST_ERROR         = "manifest_error";
+    public static final String EXTRA_SCHEDULE_UPDATE        = "update_schedule";
+    public static final String EXTRA_UPDATE_NON_INTERACTIVE = "update_non_interactive";
+
+    /* Intent actions */
+    public static final String ACTION_BOOT_COMPLETED        = "com.evervolv.updater.actions.BOOT_COMPLETED";
+    public static final String ACTION_START_DOWNLOAD        = "com.evervolv.updater.actions.START_DOWNLOAD";
+    public static final String ACTION_UPDATE_CHECK_NIGHTLY  = "com.evervolv.updater.actions.UPDATE_CHECK_NIGHTLY";
+    public static final String ACTION_UPDATE_CHECK_RELEASE  = "com.evervolv.updater.actions.UPDATE_CHECK_RELEASE";
+    public static final String ACTION_UPDATE_CHECK_TESTING  = "com.evervolv.updater.actions.UPDATE_CHECK_TESTING";
+    public static final String ACTION_UPDATE_CHECK_GAPPS    = "com.evervolv.updater.actions.UPDATE_CHECK_GAPPS";
+    public static final String ACTION_UPDATE_CHECK_FINISHED = "com.evervolv.updater.actions.UPDATE_CHECK_FINISHED";
+    public static final String ACTION_UPDATE_DOWNLOAD       = "com.evervolv.updater.actions.UPDATE_DOWNLOAD";
+    public static final String ACTION_UPDATE_NOTIFY_NEW     = "com.evervolv.updater.actions.UPDATE_NOTIFY_NEW";
+
+
+
 }

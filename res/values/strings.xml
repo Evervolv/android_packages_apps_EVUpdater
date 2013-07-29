@@ -34,14 +34,20 @@
     <string name="tab_title_gapps">Gapps</string>
     <string name="tab_title_settings">Settings</string>
 
-            <!-- NEED TO FIX -->
+        <!-- Flash activity -->
+    <string name="flash_zip_activity">Flash zip</string>
+    <string name="tips">Tips:</string>
+    <string name="tip_add_button">Press the add button to select zips to flash alongside ROM</string>
+    <string name="tip_swipe_dismiss">Swipe seconday zip to dismiss</string>
+    <string name="wipe_options">Flashing options</string>
+    <string name="wipe_data">Wipe data</string>
+    <string name="wipe_cache">Wipe cache</string>
+    <string name="wipe_dalvik">Wipe dalvik-cache</string>
+    <string name="flash_backup">Backup</string>
+    <string name="recovery_twrp">TWRP</string>
+    <string name="recovery_cwm">CWM</string>
 
-        <!-- Updates Main -->
-    <string name="pref_updates_nightly_summary">Updates that are compiled nightly\n\tWARNING: These may or may not be stable.</string>
-    <string name="pref_updates_release_summary">Updates that are in either preview, alpha or beta form\n\tBugs can be reported for these builds.</string>
-    <string name="pref_updates_test_summary">Updates that need specific testing done to them\n\tReporting bugs needs to be done on IRC</string>
-    <string name="pref_updates_gapps_summary">Google apps (required for Google Experience) </string>
-        <!-- Updates Sub -->
+        <!-- Action bar -->
     <string name="menu_refresh">Refresh</string>
     <string name="menu_delete">Delete</string>
     <string name="menu_cancel">Cancel</string>
@@ -49,62 +55,49 @@
     <string name="menu_changelog">Changelog</string>
     <string name="menu_flash">Flash zip</string>
     <string name="menu_add">Add zip</string>
+
+        <!-- Download preference -->
     <string name="status_downloaded">Downloaded</string>
     <string name="status_installed">Installed</string>
     <string name="status_downloaded_and_installed">Downloaded &amp; installed</string>
     <string name="status_new">New</string>
+    <string name="build_info_date">Date:</string>
+    <string name="build_info_filename">Filename:</string>
+    <string name="build_info_size">Size:</string>
+    <string name="build_info_md5sum_server">Md5Sum: \n(on server)</string>
+    <string name="build_info_md5sum_local">Md5Sum: \n(on device)</string>
+    <string name="build_info_md5sum_local_not_exist">Not downloaded</string>
+    <string name="build_info_md5sum_calculating">Calculating md5sum…</string>
 
+        <!-- Tab preferences -->
     <string name="pref_updates_schedule_title">Check for updates</string>
     <string name="pref_updates_schedule_dialog_title">Check for updates</string>
     <string name="pref_updates_category_available_updates_title">Available updates</string>
-        <!-- Updates (Dialogs) -->
+    <string name="schedule_never">Never</string>
+    <string name="schedule_boot">On boot</string>
+    <string name="schedule_daily">Daily</string>
+    <string name="schedule_weekly">Weekly</string>
+    <string name="schedule_biweekly">Bi-weekly</string>
+    <string name="schedule_monthly">Monthly</string>
+
+        <!-- Dialogs -->
     <string name="alert_dialog_error_title">Error!</string>
     <string name="alert_dialog_manifest_download_error">Error downloading manifest entries</string>
     <string name="alert_dialog_cancel_title">Cancel</string>
     <string name="alert_dialog_confirm_cancel">Are you sure you want to cancel this update?</string>
     <string name="alert_dialog_delete_title">Delete</string>
     <string name="alert_dialog_confirm_delete">Are you sure you want to delete this update?</string>
-    <string name="alert_dialag_gapps_title">Select gapps to install</string>
-    <string name="alert_dialag_warning_title">Warning!</string>
-    <string name="alert_dialag_warning_message">*** TWRP Is the only recovery supported at the moment.</string>
-    <string name="flash_zip_dialog">Flash zip</string>
-    <string name="listview_header">Add gapps, and flash!</string>
+    <string name="alert_dialag_reboot_title">Reboot?</string>
+    <string name="alert_dialag_reboot_message">Are you sure you want to reboot?</string>
+    <string name="changelog_dialog_title">Changelog</string>
 
-        <!-- Updates (Changelog/Info) -->
-    <string name="changelog_info_dialog_title">Changelog</string>
-
-    <string name="changelog_info_dialog_tab_info_date">Date:</string>
-    <string name="changelog_info_dialog_tab_info_filename">Filename:</string>
-    <string name="changelog_info_dialog_tab_info_size">Size:</string>
-    <string name="changelog_info_dialog_tab_info_md5sum_server">Md5Sum: \n(on server)</string>
-    <string name="changelog_info_dialog_tab_info_md5sum_local">Md5Sum: \n(on device)</string>
-    <string name="changelog_info_dialog_tab_info_status">Status:</string>
-
-    <string name="changelog_info_dialog_tab_info_md5sum_local_not_exist">Not downloaded</string>
-    <string name="changelog_info_dialog_tab_info_md5sum_calculate">Calculating md5sum…</string>
-
-        <!-- Updates Notifications -->
+        <!-- Notifications -->
     <string name="notification_update_available">New update available</string>
     <string name="notification_update_downloaded">Download complete</string>
 
-        <!-- aFileDialog -->
-    <string name="daidalos_hello">Hello World!</string>
-    <string name="daidalos_app_name">aFileDialog</string>
-    <color name="daidalos_gray">#888</color>
-    <string name="daidalos_select">Select</string>
-    <string name="daidalos_cancel">Cancel</string>
-    <string name="daidalos_ok">OK</string>
-    <string name="daidalos_new_file">New</string>
-    <string name="daidalos_create_file">Create file</string>
-    <string name="daidalos_create_folder">Create folder</string>
-    <string name="daidalos_accept">Accept</string>
-    <string name="daidalos_enter_file_name">Enter the name of the file that you want to create</string>
-    <string name="daidalos_enter_folder_name">Enter the name of the folder that you want to create</string>
-    <string name="daidalos_yes">Yes</string>
-    <string name="daidalos_no">No</string>
-    <string name="daidalos_confirm_select_file">Are you sure that you want to select the file \'$file_name\'?</string>
-    <string name="daidalos_confirm_create_file">The file \'$file_name\' do not exists, are you sure that you want to create it?</string>
-    <string name="daidalos_confirm_select_folder">Are you sure that you want to select the folder \'$file_name\'?</string>
-    <string name="daidalos_confirm_create_folder">The folder \'$file_name\' do not exists, are you sure that you want to create it?</string>
+        <!-- Toasts -->
+    <string name="toast_failed_recovery_script">Unable to create recovery script</string>
 
+        <!-- Settings -->
+    <string name="pref_updates_settings_title">Settings ( Work in progress )</string>
 </resources>

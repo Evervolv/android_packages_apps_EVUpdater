@@ -28,12 +28,16 @@ import android.content.res.Resources;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.util.Log;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
-import com.evervolv.updater.R;
 import com.evervolv.updater.db.DatabaseManager;
 import com.evervolv.updater.db.DownloadEntry;
 import com.evervolv.updater.db.ManifestEntry;
@@ -49,32 +53,32 @@ public class UpdatesFragment extends PreferenceFragment {
 
     protected static final String TAG = Constants.TAG;
 
-    public static final int DIALOG_MANIFEST_PROGRESS = 0;
     public static final int DIALOG_MANIFEST_ERROR    = 1;
     public static final int DIALOG_CONFIRM_CANCEL    = 2;
     public static final int DIALOG_CONFIRM_DELETE    = 3;
-
-    public static String BASE_STORAGE_LOCATION;
 
     protected Context mContext;
     protected Resources mRes;
     protected PreferenceCategory mAvailableCategory;
     protected AlertDialog mAlertDialog;
+    private MenuItem mMenuRefresh;
+    private boolean mUpdating = false;
 
-    protected int mDbType;
+    protected String mUpdateType;
+    protected String mUpdateAction;
 
     private DownloadManager mDownloadManager;
     private DatabaseManager mDatabaseManager;
 
+    private ActionMode mChildActionMode = null;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         mContext = getContext();
         mRes = getResources();
-
-        BASE_STORAGE_LOCATION = Environment.getExternalStorageDirectory().getAbsolutePath() +
-                "/" + Constants.DOWNLOAD_DIRECTORY;
 
         mDownloadManager = (DownloadManager) mContext.getSystemService(Context.DOWNLOAD_SERVICE);
 
@@ -101,8 +105,10 @@ public class UpdatesFragment extends PreferenceFragment {
         super.onStart();
         updateLayout();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(UpdateManifestService.ACTION_CHECK_FINISHED);
-        filter.addAction(DownloadService.ACTION_UPDATE_DOWNLOAD);
+        filter.addAction(Constants.ACTION_UPDATE_CHECK_FINISHED);
+        filter.addAction(Constants.ACTION_UPDATE_NOTIFY_NEW);
+        filter.addAction(Constants.ACTION_UPDATE_DOWNLOAD);
+        filter.setPriority(2); // Intercept orderedBroadcasts
         mContext.registerReceiver(mUpdateCheckReceiver, filter);
     }
 
@@ -113,15 +119,38 @@ public class UpdatesFragment extends PreferenceFragment {
         mContext.unregisterReceiver(mUpdateCheckReceiver);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.updates_menu, menu);
+        mMenuRefresh = menu.findItem(R.id.menu_refresh);
+
+        if (mUpdating) {
+            mMenuRefresh.setActionView(R.layout.refresh_menuitem);
+        } else {
+            mMenuRefresh.setActionView(null);
+        }
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_refresh:
+                checkForUpdates();
+                return true;
+        }
+        return false;
+    }
+
     protected BroadcastReceiver mUpdateCheckReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
 
-            if (action.equals(DownloadService.ACTION_UPDATE_DOWNLOAD)) {
-                long id = intent.getLongExtra(DownloadService.EXTRA_DOWNLOAD_ID, -1);
-                int status = intent.getIntExtra(DownloadService.EXTRA_DOWNLOAD_STATUS, -1);
-                int progress = intent.getIntExtra(DownloadService.EXTRA_DOWNLOAD_PROGRESS, -1);
+            if (action.equals(Constants.ACTION_UPDATE_DOWNLOAD)) {
+                long id = intent.getLongExtra(Constants.EXTRA_DOWNLOAD_ID, -1);
+                int status = intent.getIntExtra(Constants.EXTRA_DOWNLOAD_STATUS, -1);
+                int progress = intent.getIntExtra(Constants.EXTRA_DOWNLOAD_PROGRESS, -1);
 
                 for (int i = 0; i < mAvailableCategory.getPreferenceCount(); i++) {
                     DownloadPreference dlPref = (DownloadPreference) mAvailableCategory.getPreference(i);
@@ -129,39 +158,46 @@ public class UpdatesFragment extends PreferenceFragment {
                         dlPref.setState(status, progress);
                     }
                 }
-            } else if (action.equals(UpdateManifestService.ACTION_CHECK_FINISHED)) {
-                if (!intent.getBooleanExtra(UpdateManifestService.EXTRA_MANIFEST_ERROR, false)) {
+                abortBroadcast();
+            } else if (action.equals(Constants.ACTION_UPDATE_CHECK_FINISHED)) {
+                if (!intent.getBooleanExtra(Constants.EXTRA_MANIFEST_ERROR, false)) {
                     updateLayout();
                 } else {
                     mAvailableCategory.removeAll();
                     showDialog(DIALOG_MANIFEST_ERROR, null);
                 }
-                getActivity().setProgressBarIndeterminateVisibility(false);
+                if (mMenuRefresh != null) {
+                    mUpdating = false;
+                    getActivity().invalidateOptionsMenu();
+                    mMenuRefresh.setEnabled(true);
+                }
+            } else if (action.equals(Constants.ACTION_UPDATE_NOTIFY_NEW)) {
+                abortBroadcast();
             }
         }
     };
 
-    protected String getUpdateCheckAction() { return null; }
-
     protected void startUpdateManifestService(boolean scheduleUpdate) {
         Intent updateCheck = new Intent(mContext, UpdateManifestService.class);
-        updateCheck.setAction(getUpdateCheckAction());
+        updateCheck.setAction(mUpdateAction);
         if (scheduleUpdate) {
-            updateCheck.putExtra(UpdateManifestService.EXTRA_SCHEDULE_UPDATE, true);
+            updateCheck.putExtra(Constants.EXTRA_SCHEDULE_UPDATE, true);
         }
         mContext.startService(updateCheck);
     }
 
     public void checkForUpdates() {
+        mMenuRefresh.setEnabled(false);
         mAvailableCategory.removeAll();
-        getActivity().setProgressBarIndeterminateVisibility(true);
+        mUpdating = true;
+        getActivity().invalidateOptionsMenu();
         startUpdateManifestService(false);
     }
 
     protected void updateLayout() {
         mAvailableCategory.removeAll();
         try {
-            List<ManifestEntry> entries = mDatabaseManager.fetchManifest(mDbType);
+            List<ManifestEntry> entries = mDatabaseManager.fetchManifest(mUpdateType);
             for (ManifestEntry entry : entries) {
                 DownloadPreference item = new DownloadPreference(mContext, this, entry);
                 item.setTitle(entry.getName());
@@ -194,7 +230,6 @@ public class UpdatesFragment extends PreferenceFragment {
             DownloadEntry entry = new DownloadEntry();
             entry.setDownloadId(id);
             entry.setMd5sum(md5Sum);
-            entry.setLocationUri(filename);
             mDatabaseManager.addDownload(entry);
         } catch (SQLiteException e) {
             e.printStackTrace();
@@ -226,7 +261,7 @@ public class UpdatesFragment extends PreferenceFragment {
     public long checkDownload(String md5sum) {
         long id = -1;
         try {
-            id = mDatabaseManager.queryDownloads(md5sum);
+            id = mDatabaseManager.getDownloadId(md5sum);
         } catch (SQLiteException e) {
             e.printStackTrace();
         }
@@ -238,7 +273,7 @@ public class UpdatesFragment extends PreferenceFragment {
 
     public void startDownloadService(long downloadId) {
         Intent dlService = new Intent(mContext, DownloadService.class);
-        dlService.putExtra(DownloadService.EXTRA_DOWNLOAD_ID, downloadId);
+        dlService.putExtra(Constants.EXTRA_DOWNLOAD_ID, downloadId);
         mContext.startService(dlService);
     }
 
@@ -323,7 +358,12 @@ public class UpdatesFragment extends PreferenceFragment {
         return mAvailableCategory;
     }
 
-    public DatabaseManager getDatabaseManager() {
-        return mDatabaseManager;
+    public void setChildActionMode(ActionMode actionMode) {
+        mChildActionMode = actionMode;
     }
+
+    public ActionMode getChildActionMode() {
+        return mChildActionMode;
+    }
+
 }

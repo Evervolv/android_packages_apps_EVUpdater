@@ -26,7 +26,7 @@
           android:title="@string/menu_changelog"
           android:showAsAction="ifRoom" />
     <item android:id="@+id/menu_delete"
-          android:icon="@drawable/ic_pref_delete"
+          android:icon="@drawable/ic_menu_delete"
           android:title="@string/menu_delete"
           android:showAsAction="ifRoom" />
 </menu>
