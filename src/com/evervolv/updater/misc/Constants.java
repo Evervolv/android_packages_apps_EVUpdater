@@ -22,7 +22,7 @@ public class Constants {
 
     public static final String TAG = "EVUpdates";
 
-    public static final String APP_NAME = "EVToolbox";
+    public static final String APP_NAME = "EVUpdater";
 
     public static final String DOWNLOAD_DIRECTORY = "EVUpdates/";
 
