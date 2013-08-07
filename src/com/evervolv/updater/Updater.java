@@ -75,6 +75,8 @@ public class Updater extends Activity {
                 GappsTab.class, null);
         mTabsAdapter.addTab(bar.newTab().setText(R.string.tab_title_settings),
                 SettingsTab.class, null);
+
+        mViewPager.setOffscreenPageLimit(mTabsAdapter.getCount());
     }
 
     @Override

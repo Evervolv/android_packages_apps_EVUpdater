@@ -26,7 +26,7 @@ public class Constants {
 
     public static final String DOWNLOAD_DIRECTORY = "EVUpdates/";
 
-    public static final String API_URL = "http://evervolv.com/api/v1/list/";
+    public static final String API_URL = "http://evervolv.com/api/v2/list/";
     public static final String FETCH_URL = "http://evervolv.com/get/";
 
     public static final String API_URL_NIGHTLY = API_URL + "n/";
@@ -59,11 +59,9 @@ public class Constants {
     public static final String BUILD_TYPE_GAPPS     = "gapps";
 
     /* Intent extra fields */
-    public static final String EXTRA_DOWNLOAD_ID            = "download_id";
-    public static final String EXTRA_DOWNLOAD_STATUS        = "download_status";
-    public static final String EXTRA_DOWNLOAD_PROGRESS      = "download_progress";
     public static final String EXTRA_MANIFEST_ENTRY         = "manifest_entry";
     public static final String EXTRA_MANIFEST_ERROR         = "manifest_error";
+    public static final String EXTRA_MANIFEST_TYPE          = "manifest_type";
     public static final String EXTRA_SCHEDULE_UPDATE        = "update_schedule";
     public static final String EXTRA_UPDATE_NON_INTERACTIVE = "update_non_interactive";
 

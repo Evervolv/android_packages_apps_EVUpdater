@@ -21,6 +21,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.evervolv.updater.db.DatabaseManager;
+import com.evervolv.updater.db.ManifestEntry;
 import com.evervolv.updater.misc.Constants;
 import com.evervolv.updater.services.DownloadService;
 
@@ -28,12 +30,18 @@ public class DownloadCompleteReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
-        if (action.equals(DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
+        if (action != null && action.equals(DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
             long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
             if (downloadId > 0) {
-                Intent dlService = new Intent(context, DownloadService.class);
-                dlService.putExtra(Constants.EXTRA_DOWNLOAD_ID, downloadId);
-                context.startService(dlService);
+                DatabaseManager databaseManager = new DatabaseManager(context);
+                databaseManager.open();
+                ManifestEntry entry = databaseManager.getDownloadFromId(downloadId);
+                databaseManager.close();
+                if (entry != null) {
+                    Intent dlService = new Intent(context, DownloadService.class);
+                    dlService.putExtra(Constants.EXTRA_MANIFEST_ENTRY, entry);
+                    context.startService(dlService);
+                }
             }
         }
     }

@@ -70,15 +70,9 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".receivers.DownloadNotificationClickReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED"/>
-                <category android:name="android.intent.category.HOME"/>
-            </intent-filter>
-        </receiver>
-
         <receiver android:name=".receivers.NotificationHandler">
             <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED"/>
                 <action android:name="com.evervolv.updater.actions.UPDATE_NOTIFY_NEW"/>
                 <action android:name="com.evervolv.updater.actions.UPDATE_DOWNLOAD"/>
             </intent-filter>

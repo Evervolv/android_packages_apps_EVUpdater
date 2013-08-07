@@ -28,8 +28,6 @@ import android.content.res.Resources;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.util.Log;
@@ -39,14 +37,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.evervolv.updater.db.DatabaseManager;
-import com.evervolv.updater.db.DownloadEntry;
 import com.evervolv.updater.db.ManifestEntry;
 import com.evervolv.updater.misc.Constants;
 import com.evervolv.updater.misc.DownloadPreference;
 import com.evervolv.updater.services.DownloadService;
 import com.evervolv.updater.services.UpdateManifestService;
 
-import java.io.File;
 import java.util.List;
 
 public class UpdatesFragment extends PreferenceFragment {
@@ -146,33 +142,33 @@ public class UpdatesFragment extends PreferenceFragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-
-            if (action.equals(Constants.ACTION_UPDATE_DOWNLOAD)) {
-                long id = intent.getLongExtra(Constants.EXTRA_DOWNLOAD_ID, -1);
-                int status = intent.getIntExtra(Constants.EXTRA_DOWNLOAD_STATUS, -1);
-                int progress = intent.getIntExtra(Constants.EXTRA_DOWNLOAD_PROGRESS, -1);
-
-                for (int i = 0; i < mAvailableCategory.getPreferenceCount(); i++) {
-                    DownloadPreference dlPref = (DownloadPreference) mAvailableCategory.getPreference(i);
-                    if (dlPref.getDownloadId() == id) {
-                        dlPref.setState(status, progress);
+            ManifestEntry entry = intent.getParcelableExtra(Constants.EXTRA_MANIFEST_ENTRY);
+            String buildType = intent.getStringExtra(Constants.EXTRA_MANIFEST_TYPE);
+            if (action != null) {
+                if (entry != null && entry.getType().equals(mUpdateType)) {
+                    if (action.equals(Constants.ACTION_UPDATE_DOWNLOAD)) {
+                        for (int i = 0; i < mAvailableCategory.getPreferenceCount(); i++) {
+                            DownloadPreference pref = (DownloadPreference) mAvailableCategory.getPreference(i);
+                            pref.updateDownload(entry);
+                        }
+                        if (!Constants.DEBUG) abortBroadcast();
+                    } else if (action.equals(Constants.ACTION_UPDATE_NOTIFY_NEW)) {
+                        if (!Constants.DEBUG) abortBroadcast();
+                    }
+                } else if (action.equals(Constants.ACTION_UPDATE_CHECK_FINISHED)
+                        && buildType != null
+                        && buildType.equals(mUpdateType)) {
+                    if (!intent.getBooleanExtra(Constants.EXTRA_MANIFEST_ERROR, false)) {
+                        updateLayout();
+                    } else {
+                        showDialog(DIALOG_MANIFEST_ERROR, null);
+                    }
+                    if (mMenuRefresh != null) {
+                        mUpdating = false;
+                        getActivity().invalidateOptionsMenu();
+                        mMenuRefresh.setEnabled(true);
                     }
                 }
-                abortBroadcast();
-            } else if (action.equals(Constants.ACTION_UPDATE_CHECK_FINISHED)) {
-                if (!intent.getBooleanExtra(Constants.EXTRA_MANIFEST_ERROR, false)) {
-                    updateLayout();
-                } else {
-                    mAvailableCategory.removeAll();
-                    showDialog(DIALOG_MANIFEST_ERROR, null);
-                }
-                if (mMenuRefresh != null) {
-                    mUpdating = false;
-                    getActivity().invalidateOptionsMenu();
-                    mMenuRefresh.setEnabled(true);
-                }
-            } else if (action.equals(Constants.ACTION_UPDATE_NOTIFY_NEW)) {
-                abortBroadcast();
             }
         }
     };
@@ -188,7 +184,6 @@ public class UpdatesFragment extends PreferenceFragment {
 
     public void checkForUpdates() {
         mMenuRefresh.setEnabled(false);
-        mAvailableCategory.removeAll();
         mUpdating = true;
         getActivity().invalidateOptionsMenu();
         startUpdateManifestService(false);
@@ -197,10 +192,9 @@ public class UpdatesFragment extends PreferenceFragment {
     protected void updateLayout() {
         mAvailableCategory.removeAll();
         try {
-            List<ManifestEntry> entries = mDatabaseManager.fetchManifest(mUpdateType);
+            List<ManifestEntry> entries = mDatabaseManager.getAllEntries(mUpdateType);
             for (ManifestEntry entry : entries) {
                 DownloadPreference item = new DownloadPreference(mContext, this, entry);
-                item.setTitle(entry.getName());
                 mAvailableCategory.addPreference(item);
             }
         } catch (SQLiteException e) {
@@ -219,61 +213,52 @@ public class UpdatesFragment extends PreferenceFragment {
         return "";
     }
 
-    public long downloadUpdate(String url, String filename, String md5Sum) {
+    public void initiateDownload(String url, String fileUri, ManifestEntry entry) {
         DownloadManager.Request req = new DownloadManager.Request(Uri.parse(url));
-        req.setTitle(new File(filename).getName().replace(".partial", ""));
-        req.setDestinationUri(Uri.parse(filename));
-        req.setAllowedOverRoaming(false); //TODO: Make this a setting?
+        req.setTitle(entry.getName());
+        req.setDestinationUri(Uri.parse(fileUri));
+        req.setAllowedOverRoaming(false);
         req.setVisibleInDownloadsUi(false);
         long id = mDownloadManager.enqueue(req);
         try {
-            DownloadEntry entry = new DownloadEntry();
             entry.setDownloadId(id);
-            entry.setMd5sum(md5Sum);
-            mDatabaseManager.addDownload(entry);
+            entry.setDownloadStatus(DownloadManager.STATUS_PENDING);
+            entry.setDownloadProgress(0);
+            mDatabaseManager.updateDownloadInfo(entry);
         } catch (SQLiteException e) {
             e.printStackTrace();
         }
-        startDownloadService(id);
-        Log.i(TAG,"downloadUpdate: started download " + id);
-        return id;
+        startDownloadService(entry);
+        Log.i(TAG,"initiateDownload: started download " + id);
     }
 
-    public void stopDownload(long downloadId) {
+    public void stopDownload(ManifestEntry entry) {
+        long downloadId = entry.getDownloadId();
         if (downloadId < 0 ) {
             Log.e(TAG, "stopDownload: not a valid download " + downloadId);
             return;
         }
         Log.i(TAG, "stopDownload: dequeuing download " + downloadId);
         mDownloadManager.remove(downloadId);
-        removeDownload(downloadId);
+        removeDownload(entry);
     }
 
-    public void removeDownload(long downloadId) {
+    public void removeDownload(ManifestEntry entry) {
         try {
-            mDatabaseManager.removeDownload(downloadId);
-            Log.i(TAG, "removed download " + downloadId + " from database");
+            entry.setMd5sumLoc(null);
+            entry.setDownloadId(-1);
+            entry.setDownloadStatus(-1);
+            entry.setDownloadProgress(-1);
+            mDatabaseManager.updateDownloadInfo(entry);
+            Log.i(TAG, "removeDownload: reset download status for " + entry.getName());
         } catch (SQLiteException e) {
             e.printStackTrace();
         }
     }
 
-    public long checkDownload(String md5sum) {
-        long id = -1;
-        try {
-            id = mDatabaseManager.getDownloadId(md5sum);
-        } catch (SQLiteException e) {
-            e.printStackTrace();
-        }
-        if (id > 0) {
-            Log.i(TAG, "checkDownload: found active download " + id);
-        }
-        return id;
-    }
-
-    public void startDownloadService(long downloadId) {
+    public void startDownloadService(ManifestEntry entry) {
         Intent dlService = new Intent(mContext, DownloadService.class);
-        dlService.putExtra(Constants.EXTRA_DOWNLOAD_ID, downloadId);
+        dlService.putExtra(Constants.EXTRA_MANIFEST_ENTRY, entry);
         mContext.startService(dlService);
     }
 
@@ -304,9 +289,7 @@ public class UpdatesFragment extends PreferenceFragment {
                         new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        stopDownload(pref.getDownloadId());
-                        pref.setDownloadId(-1);
-                        pref.updateDownloadUI(DownloadPreference.STATE_NOTHING);
+                        pref.cancelDownload();
                         dialog.dismiss();
                     }
                 });
@@ -330,14 +313,9 @@ public class UpdatesFragment extends PreferenceFragment {
                         new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        File downloadFile = new File(pref.getStorageLocation(),
-                                pref.getFileName());
-                        if (downloadFile.exists()) {
-                            downloadFile.delete();
-                        } else {
-                            Log.e(TAG, downloadFile.getName() + ": Not found");
+                        if (!pref.deleteDownload()) {
+                            Log.e(TAG, "deleteDownload failed");
                         }
-                        pref.updateDownloadUI(DownloadPreference.STATE_NOTHING);
                         dialog.dismiss();
                     }
                 });

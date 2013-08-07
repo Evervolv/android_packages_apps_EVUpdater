@@ -25,6 +25,7 @@ import org.json.JSONObject;
 public class ManifestEntry implements Parcelable {
 
     public static final String COLUMN_ID       = "_id";
+    /* Fields populated by server manifest */
     public static final String COLUMN_DATE     = "date";
     public static final String COLUMN_NAME     = "name";
     public static final String COLUMN_MD5SUM   = "md5sum";
@@ -34,6 +35,12 @@ public class ManifestEntry implements Parcelable {
     public static final String COLUMN_TYPE     = "type";
     public static final String COLUMN_SIZE     = "size";
     public static final String COLUMN_COUNT    = "count";
+    /* Fields for tracking downloads */
+    public static final String COLUMN_MD5SUM_LOC        = "md5sum_loc";
+    public static final String COLUMN_DOWNLOAD_ID       = "download_id";
+    public static final String COLUMN_DOWNLOAD_STATUS   = "download_status";
+    public static final String COLUMN_DOWNLOAD_PROGRESS = "download_progress";
+
 
     static final String[] ALL_COLUMNS = {
             COLUMN_ID,
@@ -46,6 +53,10 @@ public class ManifestEntry implements Parcelable {
             COLUMN_TYPE,
             COLUMN_SIZE,
             COLUMN_COUNT,
+            COLUMN_MD5SUM_LOC,
+            COLUMN_DOWNLOAD_ID,
+            COLUMN_DOWNLOAD_STATUS,
+            COLUMN_DOWNLOAD_PROGRESS,
     };
 
     static final String TABLE_TEMPLATE = " (" +
@@ -58,7 +69,11 @@ public class ManifestEntry implements Parcelable {
             COLUMN_MESSAGE  + " TEXT, " +
             COLUMN_TYPE     + " TEXT, " +
             COLUMN_SIZE     + " INT, " +
-            COLUMN_COUNT    + " INT);";
+            COLUMN_COUNT    + " INT, " +
+            COLUMN_MD5SUM_LOC        + " TEXT, " +
+            COLUMN_DOWNLOAD_ID       + " INTEGER, " +
+            COLUMN_DOWNLOAD_STATUS   + " INT, " +
+            COLUMN_DOWNLOAD_PROGRESS + " INT);";
 
     private long id;
     private String date;
@@ -70,6 +85,10 @@ public class ManifestEntry implements Parcelable {
     private String type;
     private int size;
     private int count;
+    private String md5sumLoc;
+    private long downloadId = -1;
+    private int downloadStatus = -1;
+    private int downloadProgress = -1;
 
     public ManifestEntry() {
         /* pass */
@@ -98,6 +117,10 @@ public class ManifestEntry implements Parcelable {
         this.type     = cursor.getString(7);
         this.size     = cursor.getInt(8);
         this.count    = cursor.getInt(9);
+        this.md5sumLoc        = cursor.getString(10);
+        this.downloadId       = cursor.getLong(11);
+        this.downloadStatus   = cursor.getInt(12);
+        this.downloadProgress = cursor.getInt(13);
     }
 
     public static final Parcelable.Creator<ManifestEntry> CREATOR =
@@ -122,6 +145,10 @@ public class ManifestEntry implements Parcelable {
         this.type = in.readString();
         this.size = in.readInt();
         this.count = in.readInt();
+        this.md5sumLoc        = in.readString();
+        this.downloadId       = in.readLong();
+        this.downloadStatus   = in.readInt();
+        this.downloadProgress = in.readInt();
     }
 
     public int describeContents() {
@@ -139,6 +166,10 @@ public class ManifestEntry implements Parcelable {
         out.writeString(type);
         out.writeInt(size);
         out.writeInt(count);
+        out.writeString(md5sumLoc);
+        out.writeLong(downloadId);
+        out.writeInt(downloadStatus);
+        out.writeInt(downloadProgress);
     }
 
     public long getId() {
@@ -223,6 +254,38 @@ public class ManifestEntry implements Parcelable {
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public void setMd5sumLoc(String md5sum) {
+        this.md5sumLoc = md5sum;
+    }
+
+    public String getMd5sumLoc() {
+        return md5sumLoc;
+    }
+
+    public void setDownloadId(long id) {
+        this.downloadId = id;
+    }
+
+    public long getDownloadId() {
+        return downloadId;
+    }
+
+    public void setDownloadStatus(int status) {
+        this.downloadStatus = status;
+    }
+
+    public int getDownloadStatus() {
+        return downloadStatus;
+    }
+
+    public void setDownloadProgress(int progress) {
+        this.downloadProgress = progress;
+    }
+
+    public int getDownloadProgress() {
+        return downloadProgress;
     }
 
 }

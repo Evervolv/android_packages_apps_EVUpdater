@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 
+import com.evervolv.updater.FlashActivity;
 import com.evervolv.updater.R;
 import com.evervolv.updater.Updater;
 import com.evervolv.updater.db.ManifestEntry;
@@ -40,6 +41,11 @@ public class NotificationHandler extends BroadcastReceiver {
         String action = intent.getAction();
         if (action == null) {
             return;
+        } else if (action.equals(DownloadManager.ACTION_NOTIFICATION_CLICKED)) {
+            /* TODO possibly utilize EXTRA_NOTIFICATION_CLICK_DOWNLOAD_IDS */
+            Intent i = new Intent(context, Updater.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(i);
         } else if (action.equals(Constants.ACTION_UPDATE_NOTIFY_NEW)) {
             ManifestEntry entry = intent.getParcelableExtra(Constants.EXTRA_MANIFEST_ENTRY);
             if (Utils.isNewerThanInstalled(entry.getDate())) {
@@ -81,45 +87,37 @@ public class NotificationHandler extends BroadcastReceiver {
                 notificationManager.notify(notificationId, notification);
             }
         } else if (action.equals(Constants.ACTION_UPDATE_DOWNLOAD)) {
-            int status = intent.getIntExtra(Constants.EXTRA_DOWNLOAD_STATUS,
-                    DownloadManager.STATUS_PENDING);
-            if (status == DownloadManager.STATUS_SUCCESSFUL) {
-                long downloadId = intent.getLongExtra(Constants.EXTRA_DOWNLOAD_ID, -1);
+            ManifestEntry entry = intent.getParcelableExtra(Constants.EXTRA_MANIFEST_ENTRY);
+            if (entry != null && entry.getDownloadStatus() == DownloadManager.STATUS_SUCCESSFUL) {
+                long downloadId = entry.getDownloadId();
                 if (downloadId < 0) return;
-                DownloadManager downloadManager =
-                        (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-                DownloadManager.Query q = new DownloadManager.Query();
-                q.setFilterById(downloadId);
-                Cursor c = downloadManager.query(q);
-                if (!c.moveToFirst()) { c.close(); return; }
-                String name = c.getString(c.getColumnIndex(DownloadManager.COLUMN_TITLE));
-
-
-                //Intent flashIntent = new Intent(context, FlashActivity.class);
-                // TODO somehow build a ManifestEntry
-                //PendingIntent downloadPendingIntent =
-                //        PendingIntent.getActivity(context, 0, flashIntent, 0);
-
                 Intent clickIntent = new Intent(context, Updater.class);
+                clickIntent.putExtra(Constants.EXTRA_MANIFEST_ENTRY, entry);
                 PendingIntent clickPendingIntent =
                         PendingIntent.getActivity(context, 0, clickIntent, 0);
 
-                Notification notification =
+                Notification.Builder builder =
                         new Notification.Builder(context)
                                 .setSmallIcon(R.drawable.ic_launcher_updater)
                                 .setTicker(context.getString(R.string.notification_update_downloaded))
                                 .setContentTitle(context.getString(R.string.notification_update_downloaded))
-                                .setContentText(name)
+                                .setContentText(entry.getName())
                                 .setContentIntent(clickPendingIntent)
-                                //.addAction(R.drawable.ic_menu_flash,
-                                //        context.getString(R.string.menu_flash),
-                                //        downloadPendingIntent)
-                                .setAutoCancel(true)
-                                .build();
+                                .setAutoCancel(true);
+
+                if (!entry.getType().equals(Constants.BUILD_TYPE_GAPPS)) {
+                    Intent flashIntent = new Intent(context, FlashActivity.class);
+                    flashIntent.putExtra(Constants.EXTRA_MANIFEST_ENTRY, entry);
+                    PendingIntent downloadPendingIntent =
+                            PendingIntent.getActivity(context, 0, flashIntent, 0);
+                    builder.addAction(R.drawable.ic_menu_flash,
+                            context.getString(R.string.menu_flash),
+                            downloadPendingIntent);
+                }
 
                 NotificationManager notificationManager =
                         (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                notificationManager.notify((int)downloadId, notification);
+                notificationManager.notify((int)downloadId, builder.build());
             }
         }
     }

@@ -51,6 +51,7 @@ public class UpdateManifestService extends IntentService {
     /* Intent extra fields */
     private static final String EXTRA_MANIFEST_ERROR  = Constants.EXTRA_MANIFEST_ERROR;
     private static final String EXTRA_MANIFEST_ENTRY  = Constants.EXTRA_MANIFEST_ENTRY;
+    private static final String EXTRA_MANIFEST_TYPE   = Constants.EXTRA_MANIFEST_TYPE;
     private static final String EXTRA_SCHEDULE_UPDATE = Constants.EXTRA_SCHEDULE_UPDATE;
     private static final String EXTRA_UPDATE_NON_INTERACTIVE = Constants.EXTRA_UPDATE_NON_INTERACTIVE;
 
@@ -91,6 +92,7 @@ public class UpdateManifestService extends IntentService {
         String action = intent.getAction();
         boolean nonInteractive = intent.getBooleanExtra(EXTRA_UPDATE_NON_INTERACTIVE, false);
         boolean schedule = intent.getBooleanExtra(EXTRA_SCHEDULE_UPDATE, false);
+        String buildType;
         int updateFreq;
         long lastCheck;
         if (action.equals(ACTION_UPDATE_CHECK_NIGHTLY)) {
@@ -102,6 +104,7 @@ public class UpdateManifestService extends IntentService {
                 return;
             }
             error = handleManifest(Constants.API_URL_NIGHTLY, Constants.BUILD_TYPE_NIGHTLIES);
+            buildType = Constants.BUILD_TYPE_NIGHTLIES;
         } else if (action.equals(ACTION_UPDATE_CHECK_RELEASE)) {
             preferences.edit().putLong(Constants.PREF_LAST_UPDATE_CHECK_RELEASE, now).commit();
             if (schedule) {
@@ -111,6 +114,7 @@ public class UpdateManifestService extends IntentService {
                 return;
             }
             error = handleManifest(Constants.API_URL_RELEASE, Constants.BUILD_TYPE_RELEASE);
+            buildType = Constants.BUILD_TYPE_RELEASE;
         } else if (action.equals(ACTION_UPDATE_CHECK_TESTING)) {
             preferences.edit().putLong(Constants.PREF_LAST_UPDATE_CHECK_TESTING, now).commit();
             if (schedule) {
@@ -120,8 +124,10 @@ public class UpdateManifestService extends IntentService {
                 return;
             }
             error = handleManifest(Constants.API_URL_TESTING, Constants.BUILD_TYPE_TESTING);
+            buildType = Constants.BUILD_TYPE_TESTING;
         } else if (action.equals(ACTION_UPDATE_CHECK_GAPPS)) {
             error = handleManifest(Constants.API_URL_GAPPS, Constants.BUILD_TYPE_GAPPS);
+            buildType = Constants.BUILD_TYPE_GAPPS;
         } else if (action.equals(ACTION_BOOT_COMPLETED)) {
             if (Constants.DEBUG) Log.d(TAG, "onBootComplete");
             /* Nightlies */
@@ -169,6 +175,7 @@ public class UpdateManifestService extends IntentService {
             Intent checkIntent = new Intent();
             checkIntent.setAction(ACTION_CHECK_FINISHED);
             checkIntent.putExtra(EXTRA_MANIFEST_ERROR, error);
+            checkIntent.putExtra(EXTRA_MANIFEST_TYPE, buildType);
             sendBroadcast(checkIntent);
         }
     }
@@ -210,7 +217,7 @@ public class UpdateManifestService extends IntentService {
     private void processManifest(String jsonString, String updateType)
             throws JSONException, SQLiteException {
         JSONArray entries = new JSONArray(jsonString);
-        databaseManager.updateManifest(updateType, entries);
+        databaseManager.update(updateType, entries);
         for (int i=0; i<entries.length(); i++) {
             JSONObject entry = entries.getJSONObject(i);
             if (Utils.isNewerThanInstalled(entry.optString(ManifestEntry.COLUMN_DATE))) {

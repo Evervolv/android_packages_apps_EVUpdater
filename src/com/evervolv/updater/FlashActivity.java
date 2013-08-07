@@ -18,6 +18,7 @@ package com.evervolv.updater;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -160,6 +161,13 @@ public class FlashActivity extends Activity {
                 showRebootDialog();
             }
         });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE))
+                .cancelAll();
     }
 
     private void fillFileExplorer(File f) {
