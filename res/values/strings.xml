@@ -38,7 +38,7 @@
     <string name="flash_zip_activity">Flash zip</string>
     <string name="tips">Tips:</string>
     <string name="tip_add_button">Press the add button to select zips to flash alongside ROM</string>
-    <string name="tip_swipe_dismiss">Swipe seconday zip to dismiss</string>
+    <string name="tip_swipe_dismiss">Swipe secondary zip to dismiss</string>
     <string name="wipe_options">Flashing options</string>
     <string name="wipe_data">Wipe data</string>
     <string name="wipe_cache">Wipe cache</string>
