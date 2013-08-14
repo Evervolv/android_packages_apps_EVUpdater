@@ -35,14 +35,12 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 public class UpdateManifestService extends IntentService {
 
@@ -195,30 +193,23 @@ public class UpdateManifestService extends IntentService {
 
     private String fetchManifest(String url) throws IOException, HttpException {
         if (Constants.DEBUG) Log.d(TAG, "Fetching " + url + Utils.getDevice());
-        StringBuilder builder = new StringBuilder();
         HttpClient client = new DefaultHttpClient();
-
         HttpGet httpGet = new HttpGet(url + Utils.getDevice());
-
         HttpResponse response = client.execute(httpGet);
+        String json = null;
         if (response.getStatusLine().getStatusCode() == 200) {
-            InputStream content = response.getEntity().getContent();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(content));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                builder.append(line);
-            }
+            json = EntityUtils.toString(response.getEntity());
         } else {
             throw new HttpException("Failed to fetch manifest");
         }
-        return builder.toString();
+        return json;
     }
 
     private void processManifest(String jsonString, String updateType)
             throws JSONException, SQLiteException {
         JSONArray entries = new JSONArray(jsonString);
         databaseManager.update(updateType, entries);
-        for (int i=0; i<entries.length(); i++) {
+        for (int i=entries.length()-1; i>=0; i--) {
             JSONObject entry = entries.getJSONObject(i);
             if (Utils.isNewerThanInstalled(entry.optString(ManifestEntry.COLUMN_DATE))) {
                 Log.i(TAG, "Found new update " + entry.optString(ManifestEntry.COLUMN_NAME));
