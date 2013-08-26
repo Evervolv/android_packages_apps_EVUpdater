@@ -166,18 +166,18 @@
             style="?android:attr/buttonBarStyle">
 
             <Button
+                    android:id="@+id/button_cancel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/cancel"
+                    android:background="?android:attr/selectableItemBackground" />
+            <Button
                 android:id="@+id/button_reboot"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/reboot"
-                android:background="?android:attr/selectableItemBackground" />
-            <Button
-                android:id="@+id/button_cancel"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/cancel"
                 android:background="?android:attr/selectableItemBackground" />
 
         </LinearLayout>

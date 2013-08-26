@@ -64,8 +64,8 @@
     <string name="build_info_date">Date:</string>
     <string name="build_info_filename">Filename:</string>
     <string name="build_info_size">Size:</string>
-    <string name="build_info_md5sum_server">Md5Sum: \n(on server)</string>
-    <string name="build_info_md5sum_local">Md5Sum: \n(on device)</string>
+    <string name="build_info_md5sum_server">MD5: (server)</string>
+    <string name="build_info_md5sum_local">MD5: (device)</string>
     <string name="build_info_md5sum_local_not_exist">Not downloaded</string>
     <string name="build_info_md5sum_calculating">Calculating md5sum…</string>
 

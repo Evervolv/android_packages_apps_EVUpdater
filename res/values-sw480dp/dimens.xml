@@ -17,6 +17,5 @@
  -->
 
 <resources>
-    <string name="build_info_md5sum_server">Md5Sum: (on server)</string>
-    <string name="build_info_md5sum_local">Md5Sum: (on device)</string>
+    <dimen name="build_info_text_size">10sp</dimen>
 </resources>

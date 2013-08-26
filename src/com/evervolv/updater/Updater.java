@@ -53,7 +53,7 @@ public class Updater extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        setContentView(R.layout.toolbox);
+        setContentView(R.layout.updater);
 
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
 
