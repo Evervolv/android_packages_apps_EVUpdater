@@ -16,17 +16,27 @@
 
 package com.evervolv.updater.misc;
 
+import android.content.Context;
 import android.os.SystemProperties;
+import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import com.evervolv.updater.R;
+
 public class Utils {
 
     private Utils() { }
 
-    public static String getDevice() {
+    public static String getDevice(Context context) {
+        String overrideName = context.getResources().getString(
+                R.string.device_prop_override);
+        if (!overrideName.equals("")) {
+            if (Constants.DEBUG) Log.d(Constants.TAG, "Overriding device name!");
+            return overrideName;
+        }
         return SystemProperties.get("ro.product.device");
     }
 

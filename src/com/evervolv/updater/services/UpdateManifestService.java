@@ -192,9 +192,11 @@ public class UpdateManifestService extends IntentService {
     }
 
     private String fetchManifest(String url) throws IOException, HttpException {
-        if (Constants.DEBUG) Log.d(TAG, "Fetching " + url + Utils.getDevice());
+        if (Constants.DEBUG) Log.d(TAG, "Fetching " + url +
+                Utils.getDevice(getApplicationContext()));
         HttpClient client = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet(url + Utils.getDevice());
+        HttpGet httpGet = new HttpGet(url + Utils.getDevice(
+                getApplicationContext()));
         HttpResponse response = client.execute(httpGet);
         String json = null;
         if (response.getStatusLine().getStatusCode() == 200) {

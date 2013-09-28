@@ -18,4 +18,5 @@
 
 <resources>
     <integer name="changelog_text_zoom">60</integer>
+    <string name="device_prop_override"></string>
 </resources>
