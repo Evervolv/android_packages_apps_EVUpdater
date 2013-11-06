@@ -20,4 +20,6 @@ LOCAL_AAPT_FLAGS += --extra-packages android.support.v7.appcompat
 LOCAL_PACKAGE_NAME := EVUpdater
 LOCAL_CERTIFICATE := platform
 
+LOCAL_PRIVILEGED_MODULE := true
+
 include $(BUILD_PACKAGE)
