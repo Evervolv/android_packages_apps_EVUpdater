@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.EVUpdater" parent="android:Theme.Material.Light.DarkActionBar">
+        <item name="android:colorPrimary">@color/evupdater_primary</item>
+        <item name="android:colorPrimaryDark">@color/evupdater_primary_dark</item>
+        <item name="android:colorAccent">@color/evupdater_accent</item>
+        <item name="android:textColorPrimary">@color/evupdater_text_primary</item>
+        <item name="android:textColor">@color/evupdater_text_secondary</item>
+        <item name="android:actionModeBackground">@color/evupdater_primary</item>
+        <item name="android:actionModeSplitBackground">@color/evupdater_primary</item>
+    </style>
+</resources>

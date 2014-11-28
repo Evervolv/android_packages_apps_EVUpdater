@@ -283,13 +283,11 @@ public class DownloadPreference extends Preference implements OnClickListener {
                     mSummary.setVisibility(View.GONE);
                 }
                 mMd5sumLocal.setText(R.string.build_info_md5sum_local_not_exist);
-                mMd5sumLocal.setTextColor(Color.LTGRAY);
                 break;
             case STATE_DOWNLOADING:
                 mProgress.setVisibility(View.VISIBLE);
                 mSummary.setVisibility(View.GONE);
                 mMd5sumLocal.setText(R.string.build_info_md5sum_local_not_exist);
-                mMd5sumLocal.setTextColor(Color.LTGRAY);
                 break;
             case STATE_DOWNLOADED:
                 mProgress.setVisibility(View.GONE);

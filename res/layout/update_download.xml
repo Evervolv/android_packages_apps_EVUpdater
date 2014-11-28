@@ -53,8 +53,7 @@
                 android:layout_width="2dip"
                 android:layout_height="match_parent"
                 android:layout_marginTop="5dip"
-                android:layout_marginBottom="5dip"
-                android:background="@android:drawable/divider_horizontal_dark" />
+                android:layout_marginBottom="5dip" />
 
             <LinearLayout
                 android:id="@+id/updates_pref"
@@ -65,8 +64,7 @@
                 android:gravity="center_vertical"
                 android:clickable="true"
                 android:focusable="true"
-                android:baselineAligned="false"
-                android:background="?android:attr/selectableItemBackground">
+                android:baselineAligned="false">
 
                 <RelativeLayout
                     android:layout_width="0dip"
@@ -84,6 +82,7 @@
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textSize="14sp"
                         android:ellipsize="marquee"
+                        android:textColor="@color/evupdater_text_secondary"
                         android:fadingEdge="horizontal"/>
 
                     <TextView
@@ -96,7 +95,7 @@
                         android:visibility="gone"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textSize="12sp"
-                        android:textColor="?android:attr/textColorSecondary"
+                        android:textColor="@color/evupdater_text_secondary"
                         android:focusable="false"
                         android:maxLines="4" />
 
@@ -132,12 +131,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/build_info_text_size"
+                android:textColor="@color/evupdater_text_secondary"
                 android:text="@string/build_info_date"/>
 
             <TextView android:id="@+id/text_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/build_info_text_size"/>
+                android:textSize="@dimen/build_info_text_size"
+                android:textColor="@color/evupdater_text_secondary"/>
 
         </TableRow>
         <TableRow
@@ -149,12 +150,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/build_info_text_size"
-                android:text="@string/build_info_filename"/>
+                android:text="@string/build_info_filename"
+                android:textColor="@color/evupdater_text_secondary"/>
 
             <TextView android:id="@+id/text_filename"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/build_info_text_size"/>
+                android:textSize="@dimen/build_info_text_size"
+                android:textColor="@color/evupdater_text_secondary"/>
 
         </TableRow>
         <TableRow
@@ -166,12 +169,14 @@
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
                       android:textSize="@dimen/build_info_text_size"
-                      android:text="@string/build_info_size"/>
+                      android:text="@string/build_info_size"
+                      android:textColor="@color/evupdater_text_secondary"/>
 
             <TextView android:id="@+id/text_size"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
-                      android:textSize="@dimen/build_info_text_size"/>
+                      android:textSize="@dimen/build_info_text_size"
+                      android:textColor="@color/evupdater_text_secondary"/>
 
         </TableRow>
         <TableRow
@@ -183,13 +188,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/build_info_text_size"
-                android:text="@string/build_info_md5sum_server"/>
+                android:text="@string/build_info_md5sum_server"
+                android:textColor="@color/evupdater_text_secondary"/>
 
             <TextView android:id="@+id/text_md5sum_server"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|left"
-                android:textSize="@dimen/build_info_text_size"/>
+                android:textSize="@dimen/build_info_text_size"
+                android:textColor="@color/evupdater_text_secondary"/>
 
         </TableRow>
         <TableRow
@@ -201,13 +208,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/build_info_text_size"
-                android:text="@string/build_info_md5sum_local"/>
+                android:text="@string/build_info_md5sum_local"
+                android:textColor="@color/evupdater_text_secondary"/>
 
             <TextView android:id="@+id/text_md5sum_local"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|left"
-                android:textSize="@dimen/build_info_text_size"/>
+                android:textSize="@dimen/build_info_text_size"
+                android:textColor="@color/evupdater_text_secondary"/>
 
         </TableRow>
     </TableLayout>
