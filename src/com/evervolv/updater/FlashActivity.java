@@ -136,7 +136,9 @@ public class FlashActivity extends Activity {
                     mActionMode.finish();
                     mActionMode = null;
                 } else {
-                    //TODO: Add toast for wrong file type.
+                    // Display a toast letting the user know they can not use this file type.
+                    Toast mNotSupported = Toast.makeText(getApplicationContext(), R.string.toast_file_not_supported, Toast.LENGTH_SHORT);
+                    mNotSupported.show();
                 }
             }
         });
@@ -324,7 +326,7 @@ public class FlashActivity extends Activity {
                             PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
                             pm.reboot("recovery");
                         } else {
-                            Toast t = Toast.makeText(getApplicationContext(), R.string.toast_failed_recovery_script, 30);
+                            Toast t = Toast.makeText(getApplicationContext(), R.string.toast_failed_recovery_script, Toast.LENGTH_SHORT);
                             t.show();
                         }
                         dialog.dismiss();

@@ -99,5 +99,6 @@
 
         <!-- Toasts -->
     <string name="toast_failed_recovery_script">Unable to create recovery script</string>
+    <string name="toast_file_not_supported">Wrong file type</string>
 
 </resources>
