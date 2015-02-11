@@ -32,7 +32,6 @@
     <string name="tab_title_releases">Releases</string>
     <string name="tab_title_testing">Testing</string>
     <string name="tab_title_gapps">Gapps</string>
-    <string name="tab_title_settings">Settings</string>
 
         <!-- Flash activity -->
     <string name="flash_zip_activity">Flash zip</string>
@@ -98,6 +97,4 @@
         <!-- Toasts -->
     <string name="toast_failed_recovery_script">Unable to create recovery script</string>
 
-        <!-- Settings -->
-    <string name="pref_updates_settings_title">Settings ( Work in progress )</string>
 </resources>

@@ -44,7 +44,6 @@ public class Updater extends Activity {
     private static final int TAB_POS_RELEASES   = 1;
     private static final int TAB_POS_TESTING    = 2;
     private static final int TAB_POS_GAPPS      = 3;
-    private static final int TAB_POS_SETTINGS   = 4;
 
     private ViewPager mViewPager;
     private TabsAdapter mTabsAdapter;
@@ -73,8 +72,6 @@ public class Updater extends Activity {
                 TestingTab.class, null);
         mTabsAdapter.addTab(bar.newTab().setText(R.string.tab_title_gapps),
                 GappsTab.class, null);
-        mTabsAdapter.addTab(bar.newTab().setText(R.string.tab_title_settings),
-                SettingsTab.class, null);
 
         mViewPager.setOffscreenPageLimit(mTabsAdapter.getCount());
     }
@@ -168,18 +165,11 @@ public class Updater extends Activity {
 
         public void onPageSelected(int position) {
             mActionBar.setSelectedNavigationItem(position);
-
-            /* We need to close the action view when scrolling, if opened.
-             * But skip the last fragment, it's our settings. And skip when
-             * frag is null.
-             */
-            if (mLastPosition != TAB_POS_SETTINGS) {
-                UpdatesFragment frag = findFragmentByPosition(mLastPosition);
-                if (frag != null) {
-                    ActionMode actionMode = frag.getChildActionMode();
-                    if (actionMode != null) {
-                        actionMode.finish();
-                    }
+            UpdatesFragment frag = findFragmentByPosition(mLastPosition);
+            if (frag != null) {
+                ActionMode actionMode = frag.getChildActionMode();
+                if (actionMode != null) {
+                    actionMode.finish();
                 }
             }
             mLastPosition = position;
