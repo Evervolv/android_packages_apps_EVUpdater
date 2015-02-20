@@ -2,8 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.evervolv.updater"
     android:versionCode="1"
-    android:versionName="1.0"
-    coreApp="true">
+    android:versionName="1.0">
+
+    <uses-sdk
+        android:minSdkVersion="21" />
 
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
