@@ -41,7 +41,7 @@ public class Utils {
     }
 
     public static String getInstalledVersion() {
-        return SystemProperties.get("ro.build.romversion");
+        return SystemProperties.get("ro.evervolv.version");
     }
 
     public static long getInstalledDate() {
