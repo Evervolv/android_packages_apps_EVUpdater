@@ -16,6 +16,7 @@
 
 package com.evervolv.updater;
 
+import android.Manifest;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
@@ -24,8 +25,10 @@ import android.app.FragmentTransaction;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.content.PermissionChecker;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.ActionMode;
@@ -45,6 +48,8 @@ public class Updater extends Activity {
     private static final int TAB_POS_TESTING    = 2;
     private static final int TAB_POS_GAPPS      = 3;
 
+    private final static int REQUEST_READ_STORAGE_PERMISSION = 1;
+
     private ViewPager mViewPager;
     private TabsAdapter mTabsAdapter;
 
@@ -55,6 +60,13 @@ public class Updater extends Activity {
         setContentView(R.layout.updater);
 
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
+
+        if (Build.VERSION.SDK_INT >= 23 && PermissionChecker
+                .checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) !=
+                PermissionChecker.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    REQUEST_READ_STORAGE_PERMISSION);
+        }
 
         final ActionBar bar = getActionBar();
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
