@@ -17,10 +17,11 @@
  -->
 
 <resources> 
-    <color name="evupdater_primary">@*android:color/material_blue_grey_900</color>
-    <color name="evupdater_primary_dark">@*android:color/material_blue_grey_950</color>
-    <color name="evupdater_accent">@*android:color/material_deep_teal_500</color>
+    <color name="themePrimary">@*android:color/material_blue_grey_900</color>
+    <color name="themePrimaryDark">@*android:color/material_blue_grey_950</color>
+    <color name="themeAccent">@*android:color/material_deep_teal_500</color>
 
-    <color name="evupdater_text_primary">@*android:color/white</color>
-    <color name="evupdater_text_secondary">@*android:color/black</color>
+    <color name="textColor">@android:color/white</color>
+    <color name="textColorPrimary">@android:color/black</color>
+    <color name="textColorSecondary">@android:color/black</color>
 </resources>

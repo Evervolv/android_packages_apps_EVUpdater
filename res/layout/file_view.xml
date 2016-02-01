@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:textStyle="bold"
-        android:textColor="@color/evupdater_text_secondary"
+        android:textColor="@color/textColorPrimary"
         android:layout_toRightOf="@+id/fd_Icon1"
         android:layout_marginTop="5dip"
         android:layout_marginLeft="5dip">
@@ -27,7 +27,7 @@
         android:id="@+id/TextView02"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/evupdater_text_secondary"
+        android:textColor="@color/textColorPrimary"
         android:layout_toRightOf="@+id/fd_Icon1"
         android:layout_below="@+id/TextView01"
         android:layout_marginLeft="10dip">
@@ -37,7 +37,7 @@
         android:id="@+id/TextViewDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/evupdater_text_secondary"
+        android:textColor="@color/textColorPrimary"
         android:layout_below="@+id/TextView01"
         android:layout_alignParentRight="true"
         android:layout_marginLeft="5dip">
