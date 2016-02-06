@@ -63,7 +63,7 @@ public class NotificationHandler extends BroadcastReceiver {
 
                 Notification notification =
                         new Notification.Builder(context)
-                                .setSmallIcon(R.drawable.ic_launcher_updater)
+                                .setSmallIcon(R.mipmap.ic_updater)
                                 .setTicker(context.getString(R.string.notification_update_available))
                                 .setContentTitle(context.getString(R.string.notification_update_available))
                                 .setContentText(entry.getName())
@@ -98,7 +98,7 @@ public class NotificationHandler extends BroadcastReceiver {
 
                 Notification.Builder builder =
                         new Notification.Builder(context)
-                                .setSmallIcon(R.drawable.ic_launcher_updater)
+                                .setSmallIcon(R.mipmap.ic_updater)
                                 .setTicker(context.getString(R.string.notification_update_downloaded))
                                 .setContentTitle(context.getString(R.string.notification_update_downloaded))
                                 .setContentText(entry.getName())
