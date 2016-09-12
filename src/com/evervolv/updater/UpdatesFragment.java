@@ -73,7 +73,7 @@ public class UpdatesFragment extends PreferenceFragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        mContext = getContext();
+        mContext = getActivity().getApplicationContext();
         mRes = getResources();
 
         mDownloadManager = (DownloadManager) mContext.getSystemService(Context.DOWNLOAD_SERVICE);
@@ -84,10 +84,6 @@ public class UpdatesFragment extends PreferenceFragment {
 
     public ContentResolver getContentResolver() {
          return getActivity().getContentResolver();
-    }
-
-    public Context getContext() {
-        return getActivity().getApplicationContext();
     }
 
     @Override
