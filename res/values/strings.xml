@@ -28,8 +28,8 @@
     <string name="flash">Flash</string>
 
         <!-- Main app strings ( immediate tabs ) -->
-    <string name="tab_title_nightlies">Nightlies</string>
-    <string name="tab_title_releases">Releases</string>
+    <string name="tab_title_nightlies">Nightly</string>
+    <string name="tab_title_releases">Release</string>
     <string name="tab_title_testing">Testing</string>
     <string name="tab_title_gapps">Gapps</string>
 
