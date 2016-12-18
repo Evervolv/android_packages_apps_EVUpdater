@@ -179,19 +179,23 @@ public class DownloadService extends Service {
                         updateUI = false;
                         break;
                     case DownloadManager.STATUS_SUCCESSFUL:
-                        String file = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
-                        File partialFile = new File(file);
-                        File newFile = new File(file.replace(".partial", ""));
-                        partialFile.renameTo(newFile);
-                        entry.setDownloadProgress(100);
-                        try {
-                            Log.i(TAG, LogPrefix + " complete... Calculating MD5SUM");
-                            entry.setMd5sumLoc(MD5.calculateMD5(newFile));
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                        String filePath = null;
+                        String fileUri = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+                        if (fileUri != null) {
+                            File partialFile = new File(Uri.parse(fileUri).getPath());
+                            filePath = partialFile.getAbsolutePath();
+                            File newFile = new File(filePath.replace(".partial", ""));
+                            partialFile.renameTo(newFile);
+                            entry.setDownloadProgress(100);
+                            try {
+                                Log.i(TAG, LogPrefix + " complete... Calculating MD5SUM");
+                                entry.setMd5sumLoc(MD5.calculateMD5(newFile));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            end = true;
+                            if (Constants.DEBUG) Log.d(TAG, LogPrefix + " completed successfully");
                         }
-                        end = true;
-                        if (Constants.DEBUG) Log.d(TAG, LogPrefix + " completed successfully");
                         break;
                     case DownloadManager.STATUS_FAILED:
                     default: /* We don't want this running forever if something goes wrong */
