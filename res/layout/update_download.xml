@@ -82,7 +82,6 @@
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textSize="14sp"
                         android:ellipsize="marquee"
-                        android:textColor="@color/textColorPrimary"
                         android:fadingEdge="horizontal"/>
 
                     <TextView
@@ -95,7 +94,6 @@
                         android:visibility="gone"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textSize="12sp"
-                        android:textColor="@color/textColorPrimary"
                         android:focusable="false"
                         android:maxLines="4" />
 
@@ -131,14 +129,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/build_info_text_size"
-                android:textColor="@color/textColorPrimary"
                 android:text="@string/build_info_date"/>
 
             <TextView android:id="@+id/text_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/build_info_text_size"
-                android:textColor="@color/textColorPrimary"/>
+                android:textSize="@dimen/build_info_text_size"/>
 
         </TableRow>
         <TableRow
@@ -150,14 +146,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/build_info_text_size"
-                android:text="@string/build_info_filename"
-                android:textColor="@color/textColorPrimary"/>
+                android:text="@string/build_info_filename"/>
 
             <TextView android:id="@+id/text_filename"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/build_info_text_size"
-                android:textColor="@color/textColorPrimary"/>
+                android:textSize="@dimen/build_info_text_size"/>
 
         </TableRow>
         <TableRow
@@ -169,14 +163,12 @@
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
                       android:textSize="@dimen/build_info_text_size"
-                      android:text="@string/build_info_size"
-                      android:textColor="@color/textColorPrimary"/>
+                      android:text="@string/build_info_size"/>
 
             <TextView android:id="@+id/text_size"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
-                      android:textSize="@dimen/build_info_text_size"
-                      android:textColor="@color/textColorPrimary"/>
+                      android:textSize="@dimen/build_info_text_size"/>
 
         </TableRow>
         <TableRow
@@ -188,15 +180,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/build_info_text_size"
-                android:text="@string/build_info_md5sum_server"
-                android:textColor="@color/textColorPrimary"/>
+                android:text="@string/build_info_md5sum_server"/>
 
             <TextView android:id="@+id/text_md5sum_server"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|left"
-                android:textSize="@dimen/build_info_text_size"
-                android:textColor="@color/textColorPrimary"/>
+                android:textSize="@dimen/build_info_text_size"/>
 
         </TableRow>
         <TableRow
@@ -208,15 +198,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/build_info_text_size"
-                android:text="@string/build_info_md5sum_local"
-                android:textColor="@color/textColorPrimary"/>
+                android:text="@string/build_info_md5sum_local"/>
 
             <TextView android:id="@+id/text_md5sum_local"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|left"
-                android:textSize="@dimen/build_info_text_size"
-                android:textColor="@color/textColorPrimary"/>
+                android:textSize="@dimen/build_info_text_size"/>
 
         </TableRow>
     </TableLayout>
