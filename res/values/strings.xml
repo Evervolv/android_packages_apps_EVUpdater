@@ -18,8 +18,11 @@
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-        <!-- Generic Strings, multiple uses -->
+        <!-- App name, system update string -->
     <string name="app_name">Updater</string>
+    <string name="evervolv_updates">Evervolv updates</string>
+
+        <!-- Generic Strings, multiple uses -->
     <string name="apply">Apply</string>
     <string name="okay">Okay</string>
     <string name="cancel">Cancel</string>
