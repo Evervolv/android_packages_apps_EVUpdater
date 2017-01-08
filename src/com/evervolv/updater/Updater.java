@@ -46,7 +46,6 @@ public class Updater extends Activity {
     private static final int TAB_POS_NIGHTLIES  = 0;
     private static final int TAB_POS_RELEASES   = 1;
     private static final int TAB_POS_TESTING    = 2;
-    private static final int TAB_POS_GAPPS      = 3;
 
     private final static int REQUEST_READ_STORAGE_PERMISSION = 1;
 
@@ -82,8 +81,6 @@ public class Updater extends Activity {
                 ReleasesTab.class, null);
         mTabsAdapter.addTab(bar.newTab().setText(R.string.tab_title_testing),
                 TestingTab.class, null);
-        mTabsAdapter.addTab(bar.newTab().setText(R.string.tab_title_gapps),
-                GappsTab.class, null);
 
         mViewPager.setOffscreenPageLimit(mTabsAdapter.getCount());
     }
@@ -104,8 +101,6 @@ public class Updater extends Activity {
                 mViewPager.setCurrentItem(TAB_POS_RELEASES);
             } else if (entry.getType().equals(Constants.BUILD_TYPE_TESTING)) {
                 mViewPager.setCurrentItem(TAB_POS_TESTING);
-            } else if (entry.getType().equals(Constants.BUILD_TYPE_GAPPS)) {
-                mViewPager.setCurrentItem(TAB_POS_GAPPS);
             } else {
                 Log.e(Constants.TAG, "Updater::onStart() - Unknown build type");
             }
