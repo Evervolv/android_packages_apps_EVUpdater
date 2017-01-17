@@ -94,7 +94,7 @@ public class UpdateManifestService extends IntentService {
         int updateFreq;
         long lastCheck;
         if (action.equals(ACTION_UPDATE_CHECK_NIGHTLY)) {
-            preferences.edit().putLong(Constants.PREF_LAST_UPDATE_CHECK_NIGHTLY, now).commit();
+            preferences.edit().putLong(Constants.PREF_LAST_UPDATE_CHECK_NIGHTLY, now).apply();
             if (schedule) {
                 updateFreq = preferences.getInt(Constants.PREF_UPDATE_SCHEDULE_NIGHTLY,
                         Constants.UPDATE_DEFAULT_NIGHTLY);
@@ -104,7 +104,7 @@ public class UpdateManifestService extends IntentService {
             error = handleManifest(Constants.API_URL_NIGHTLY, Constants.BUILD_TYPE_NIGHTLIES);
             buildType = Constants.BUILD_TYPE_NIGHTLIES;
         } else if (action.equals(ACTION_UPDATE_CHECK_RELEASE)) {
-            preferences.edit().putLong(Constants.PREF_LAST_UPDATE_CHECK_RELEASE, now).commit();
+            preferences.edit().putLong(Constants.PREF_LAST_UPDATE_CHECK_RELEASE, now).apply();
             if (schedule) {
                 updateFreq = preferences.getInt(Constants.PREF_UPDATE_SCHEDULE_RELEASE,
                         Constants.UPDATE_DEFAULT_RELEASE);
@@ -114,7 +114,7 @@ public class UpdateManifestService extends IntentService {
             error = handleManifest(Constants.API_URL_RELEASE, Constants.BUILD_TYPE_RELEASE);
             buildType = Constants.BUILD_TYPE_RELEASE;
         } else if (action.equals(ACTION_UPDATE_CHECK_TESTING)) {
-            preferences.edit().putLong(Constants.PREF_LAST_UPDATE_CHECK_TESTING, now).commit();
+            preferences.edit().putLong(Constants.PREF_LAST_UPDATE_CHECK_TESTING, now).apply();
             if (schedule) {
                 updateFreq = preferences.getInt(Constants.PREF_UPDATE_SCHEDULE_TESTING,
                         Constants.UPDATE_DEFAULT_TESTING);

@@ -246,7 +246,7 @@ public class FlashActivity extends Activity {
                         mWipeDalvikCheckbox.setEnabled(true);
                         break;
                 }
-                mSharedPrefs.edit().putInt(RECOVERY_PREF, position).commit();
+                mSharedPrefs.edit().putInt(RECOVERY_PREF, position).apply();
                 mWhichRecovery = position;
             }
             @Override
