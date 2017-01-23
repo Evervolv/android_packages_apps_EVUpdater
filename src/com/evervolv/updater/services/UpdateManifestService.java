@@ -30,17 +30,19 @@ import com.evervolv.updater.db.ManifestEntry;
 import com.evervolv.updater.misc.Constants;
 import com.evervolv.updater.misc.Utils;
 
-import org.apache.http.HttpException;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.lang.StringBuilder;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class UpdateManifestService extends IntentService {
 
@@ -191,20 +193,20 @@ public class UpdateManifestService extends IntentService {
         return error;
     }
 
-    private String fetchManifest(String url) throws IOException, HttpException {
+    private String fetchManifest(String url) throws IOException {
         if (Constants.DEBUG) Log.d(TAG, "Fetching " + url +
                 Utils.getDevice(getApplicationContext()));
-        HttpClient client = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet(url + Utils.getDevice(
-                getApplicationContext()));
-        HttpResponse response = client.execute(httpGet);
-        String json = null;
-        if (response.getStatusLine().getStatusCode() == 200) {
-            json = EntityUtils.toString(response.getEntity());
-        } else {
-            throw new HttpException("Failed to fetch manifest");
+        URL u = new URL(url + Utils.getDevice(getApplicationContext()));
+        HttpURLConnection connection = (HttpURLConnection) u.openConnection();
+        connection.setRequestMethod("GET");
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String line = null;
+        StringBuilder stringBuilder = new StringBuilder();
+        while ((line = bufferedReader.readLine()) != null) {
+            stringBuilder.append(line + '\n');
         }
-        return json;
+        connection.disconnect();
+        return stringBuilder.toString();
     }
 
     private void processManifest(String jsonString, String updateType)
