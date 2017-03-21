@@ -102,7 +102,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
-            android:layout_marginLeft="3dp"
+            android:layout_marginStart="3dp"
             android:layout_marginBottom="5dp"
             android:textSize="20sp"
             android:text="@string/wipe_options"/>
@@ -110,15 +110,15 @@
         <View android:id="@+id/bottom_horizontal_divider"
             android:layout_width="150dp"
             android:layout_height="1dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginBottom="5dp"/>
 
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
             android:layout_marginBottom="10dp">
             <TableRow
                 android:layout_width="match_parent"
@@ -153,8 +153,8 @@
         <View android:id="@+id/bottom_horizontal_divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"/>
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"/>
 
         <LinearLayout android:id="@+id/button_bar"
             android:layout_width="match_parent"

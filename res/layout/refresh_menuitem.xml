@@ -21,8 +21,8 @@
     android:layout_height="48dp"
     android:addStatesFromChildren="true"
     android:focusable="true"
-    android:paddingLeft="4dp"
-    android:paddingRight="4dp"
+    android:paddingStart="4dp"
+    android:paddingEnd="4dp"
     android:gravity="center"
     style="?android:attr/actionButtonStyle">
     <ProgressBar
