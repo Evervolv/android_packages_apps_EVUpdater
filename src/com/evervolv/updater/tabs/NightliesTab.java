@@ -24,7 +24,6 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
-import android.util.Log;
 
 import com.evervolv.updater.R;
 import com.evervolv.updater.UpdatesFragment;

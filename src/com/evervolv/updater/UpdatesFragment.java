@@ -28,13 +28,18 @@ import android.content.res.Resources;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.ActionMode;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.evervolv.updater.db.DatabaseManager;
 import com.evervolv.updater.db.ManifestEntry;
@@ -57,16 +62,33 @@ public class UpdatesFragment extends PreferenceFragment {
     protected Resources mRes;
     protected PreferenceCategory mAvailableCategory;
     protected AlertDialog mAlertDialog;
-    private MenuItem mMenuRefresh;
-    private boolean mUpdating = false;
 
     protected String mUpdateType;
     protected String mUpdateAction;
 
     private DownloadManager mDownloadManager;
     private DatabaseManager mDatabaseManager;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private ActionMode mChildActionMode = null;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.preference_swipe_fragment, container, false);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_list_container);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        checkForUpdates();
+                    }
+                }, 2500);
+            }
+        });
+        return v;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -114,13 +136,6 @@ public class UpdatesFragment extends PreferenceFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.updates_menu, menu);
-        mMenuRefresh = menu.findItem(R.id.menu_refresh);
-
-        if (mUpdating) {
-            mMenuRefresh.setActionView(R.layout.refresh_menuitem);
-        } else {
-            mMenuRefresh.setActionView(null);
-        }
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -159,11 +174,6 @@ public class UpdatesFragment extends PreferenceFragment {
                     } else {
                         showDialog(DIALOG_MANIFEST_ERROR, null);
                     }
-                    if (mMenuRefresh != null) {
-                        mUpdating = false;
-                        getActivity().invalidateOptionsMenu();
-                        mMenuRefresh.setEnabled(true);
-                    }
                 }
             }
         }
@@ -179,10 +189,9 @@ public class UpdatesFragment extends PreferenceFragment {
     }
 
     public void checkForUpdates() {
-        mMenuRefresh.setEnabled(false);
-        mUpdating = true;
         getActivity().invalidateOptionsMenu();
         startUpdateManifestService(false);
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     protected void updateLayout() {
