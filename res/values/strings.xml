@@ -20,7 +20,7 @@
 
         <!-- App name, system update string -->
     <string name="app_name">Updater</string>
-    <string name="evervolv_updates">Evervolv updates</string>
+    <string name="evervolv_updates">System updates</string>
 
         <!-- Generic Strings, multiple uses -->
     <string name="apply">Apply</string>
