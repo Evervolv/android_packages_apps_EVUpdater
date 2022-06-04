@@ -45,7 +45,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -57,6 +60,8 @@ import java.util.zip.ZipFile;
 public class Utils {
 
     private static final String TAG = "Utils";
+
+    private static final String DOWNLOAD_URL = "http://evervolv.com/get/{filename}";
 
     private Utils() {
     }
@@ -80,17 +85,38 @@ public class Utils {
         return new File(context.getCacheDir(), "updates.json");
     }
 
+    private static String getVersion(String name) {
+        String[] fileInfo = name.split("-");
+        return fileInfo[1];
+    }
+
+    private static long getTimestamp(String name) {
+        String[] fileInfo = name.split("-");
+        long utc;
+        try {
+            Date parsedDate = new SimpleDateFormat("yyyy.MM.dd-HHmm")
+                    .parse(fileInfo[3] + "-" + fileInfo[4]);
+            utc = parsedDate.getTime();
+        } catch (ParseException e) {
+            utc = -1;
+        }
+        return utc;
+    }
+
     // This should really return an UpdateBaseInfo object, but currently this only
     // used to initialize UpdateInfo objects
     private static UpdateInfo parseJsonUpdate(JSONObject object) throws JSONException {
         Update update = new Update();
-        update.setTimestamp(object.getLong("datetime"));
-        update.setName(object.getString("filename"));
-        update.setDownloadId(object.getString("id"));
-        update.setType(object.getString("romtype"));
-        update.setFileSize(object.getLong("size"));
-        update.setDownloadUrl(object.getString("url"));
-        update.setVersion(object.getString("version"));
+        final String fileName = object.getString("name");
+        update.setName(fileName);
+        final long date = getTimestamp(fileName) / 1000;
+        update.setTimestamp(date);
+        final String version = getVersion(fileName);
+        update.setVersion(version);
+        update.setDownloadId(object.getString("md5sum"));
+        update.setType(object.getString("type"));
+        update.setFileSize(Long.valueOf(object.getInt("size")));
+        update.setDownloadUrl(DOWNLOAD_URL.replace("{filename}", fileName));
         return update;
     }
 
@@ -99,8 +125,7 @@ public class Utils {
             Log.d(TAG, update.getName() + " is older than current Android version");
             return false;
         }
-        if (!SystemProperties.getBoolean(Constants.PROP_UPDATER_ALLOW_DOWNGRADING, false) &&
-                update.getTimestamp() <= SystemProperties.getLong(Constants.PROP_BUILD_DATE, 0)) {
+        if (update.getTimestamp() <= SystemProperties.getLong(Constants.PROP_BUILD_DATE, 0)) {
             Log.d(TAG, update.getName() + " is older than/equal to the current build");
             return false;
         }
@@ -112,10 +137,8 @@ public class Utils {
     }
 
     public static boolean canInstall(UpdateBaseInfo update) {
-        return (SystemProperties.getBoolean(Constants.PROP_UPDATER_ALLOW_DOWNGRADING, false) ||
-                update.getTimestamp() > SystemProperties.getLong(Constants.PROP_BUILD_DATE, 0)) &&
-                update.getVersion().equalsIgnoreCase(
-                        SystemProperties.get(Constants.PROP_BUILD_VERSION));
+        return update.getTimestamp() > SystemProperties.getLong(Constants.PROP_BUILD_DATE, 0) &&
+                update.getVersion().compareTo(SystemProperties.get(Constants.PROP_BUILD_VERSION)) >= 0;
     }
 
     public static List<UpdateInfo> parseJson(File file, boolean compatibleOnly)
@@ -125,12 +148,11 @@ public class Utils {
         StringBuilder json = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             for (String line; (line = br.readLine()) != null;) {
-                json.append(line);
+                json.append(line + '\n');
             }
         }
 
-        JSONObject obj = new JSONObject(json.toString());
-        JSONArray updatesList = obj.getJSONArray("response");
+        JSONArray updatesList = new JSONArray(json.toString());
         for (int i = 0; i < updatesList.length(); i++) {
             if (updatesList.isNull(i)) {
                 continue;
@@ -151,30 +173,21 @@ public class Utils {
     }
 
     public static String getServerURL(Context context) {
-        String incrementalVersion = SystemProperties.get(Constants.PROP_BUILD_VERSION_INCREMENTAL);
-        String device = SystemProperties.get(Constants.PROP_NEXT_DEVICE,
-                SystemProperties.get(Constants.PROP_DEVICE));
+        String device = SystemProperties.get(Constants.PROP_DEVICE);
         String type = SystemProperties.get(Constants.PROP_RELEASE_TYPE).toLowerCase(Locale.ROOT);
 
-        String serverUrl = SystemProperties.get(Constants.PROP_UPDATER_URI);
-        if (serverUrl.trim().isEmpty()) {
-            serverUrl = context.getString(R.string.updater_server_url);
-        }
-
+        String serverUrl = serverUrl = context.getString(R.string.updater_server_url);
         return serverUrl.replace("{device}", device)
-                .replace("{type}", type)
-                .replace("{incr}", incrementalVersion);
+                .replace("{type}", type.substring(0, 1));
     }
 
     public static String getUpgradeBlockedURL(Context context) {
-        String device = SystemProperties.get(Constants.PROP_NEXT_DEVICE,
-                SystemProperties.get(Constants.PROP_DEVICE));
+        String device = SystemProperties.get(Constants.PROP_DEVICE);
         return context.getString(R.string.blocked_update_info_url, device);
     }
 
     public static String getChangelogURL(Context context) {
-        String device = SystemProperties.get(Constants.PROP_NEXT_DEVICE,
-                SystemProperties.get(Constants.PROP_DEVICE));
+        String device = SystemProperties.get(Constants.PROP_DEVICE);
         return context.getString(R.string.menu_changelog_url, device);
     }
 
