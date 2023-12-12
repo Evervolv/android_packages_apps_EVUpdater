@@ -104,9 +104,11 @@
         <item quantity="other"><xliff:g id="count">%d</xliff:g> orë të mbetura</item>
     </plurals>
     <string name="update_over_metered_network_title">Paralajmërim</string>
-    <string name="update_over_metered_network_message">Jeni gati të shkarkoni një paketë përditësimi përmes një rrjeti të matur, i cili ka të ngjarë të shkaktojë përdorim të lartë të të dhënave. Dëshironi të vazhdoni?</string>
+    <string name="update_over_metered_network_message">Jeni gati të shkarkoni një paketë përditësimi përmes një rrjeti celular, i cili ka të ngjarë të shkaktojë përdorim të lartë të të dhënave.
+
+Dëshironi të vazhdoni?</string>
     <string name="checkbox_metered_network_warning">Mos e shfaq përsëri</string>
-    <string name="menu_metered_network_warning">Paralajmërim i rrjetit me matës</string>
+    <string name="menu_metered_network_warning">Paralajmërim i rrjetit celular</string>
     <string name="blocked_update_dialog_title">Përditësimi është bllokuar</string>
     <string name="blocked_update_dialog_message">Ky përditësim nuk mund të instalohet me app e përditësuesit. Për më shumë informacion ju lutem lexoni <xliff:g id="info_url">%1$s</xliff:g>.</string>
     <string name="export_channel_title">Eksporto përfundimin</string>
@@ -116,4 +118,10 @@
     <string name="info_dialog_title">A e dinit?</string>
     <string name="info_dialog_message">Përditësimet e LineageOS janë paketa të plota instalimi. Kjo do të thotë që gjithmonë mund të instaloni vetëm përditësimin më të fundit, edhe nëse keni anashkaluar disa në mes!</string>
     <string name="info_dialog_ok">Faleminderit për informacionin!</string>
+    <string name="local_update_import">Përditësim lokal</string>
+    <string name="local_update_import_progress">Përditësimi lokal po importohet\u2026</string>
+    <string name="local_update_import_success">%1$s është importuar. Dëshiron ta instalosh?</string>
+    <string name="local_update_import_failure">Importimi i përditësimit lokal dështoi</string>
+    <string name="local_update_import_install">Instalo</string>
+    <string name="local_update_name">Përditësim lokal</string>
 </resources>
